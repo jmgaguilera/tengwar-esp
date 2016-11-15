@@ -1,0 +1,299 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2016-11-15T17:29:29+01:00
+
+====== gramática básica ======
+Created martes 15 noviembre 2016
+
+Voy a describir la gramática siguiendo la sintaxis de [[http://antlr.org|ANTRL]]
+
+===== Gramática - léxico básico =====
+
+vocal_sin_acento	: 'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U' ;
+
+vocal_con_acento	: 'á' | 'é' | 'í' | 'ó' | 'ú' | 'Á' | 'É' | 'Í' | 'Ó' | 'Ú' ;
+
+vocal_con_dieresis	: 'ü' | 'Ü' ;
+
+y_griega		: y | 'Y' ;							// puede actuar como vocal (final de palabra) 
+																													 // o como consonante (resto de casos)
+vocal			: vocal_sin_acento | vocal_con_acento | vocal_con_dieresis ;
+
+consonante		: 'b' | 'B' | 'c' | 'C' | 'd' | 'D' | 'f' | 'F' | 'g' | 'G' |
+								  'h' | 'H' | 'j' | 'J' | 'k' | 'K' | 'l' | 'L' | 'm' | 'M' |
+								  'n' | 'N' | 'ñ' | 'Ñ' | 'p' | 'P' | 'q' | 'Q' | 'r' | 'R' |
+								  's' | 'S' | 't' | 'T' | 'v' | 'V' | 'w' | 'W' | 'x' | 'X' |
+								 'z' | 'Z' ;
+
+apertura_excl		: '¡' ;
+cierre_excl		: '!' ;
+
+apertura_interrog	: '¿' ;
+cierre_interrog		: '?' ;
+
+apertura_comillas		: '"' | "'" ;
+cierre_comillas			: '"' | "'" ;
+
+cierre			: cierre_comillas | cierre_excl | cierre_interrog ;
+
+apertura		: apertura_comillas | apertura_excl | cierre_excl ;
+
+puntuacion		: '.' | ';' | ':' | ','
+
+espacio		: ' '+ ; 							 // uno o más espacios en blanco
+
+palabra			: (vocal | consonante | puntuacion) + ;
+
+continuacion_frase	: EOF | espacio frase ;					// EOF o espacio en blanco seguido de una frase
+
+frase			: palabra | palabra continuacion_frase | 			// Símbolo raiz del analizador lexicográfico
+								  apertura frase cierre;
+
+
+===== Gramática básica (vocales plenas - fonética) =====
+
+==== Tabla de traducción a tengwarscript (entrada -> salida) ====
+
+consonante(t | T) -> '\Ttinco' ;
+
+consonante(p | P) -> '\Tparma' ;
+
+consonante(c | C) consonante(h) -> '\Tcalma' ;
+
+consonante(c | C) vocal(a | A) -> '\Tquesse\Tvilya'
+consonante(c | C) vocal(o | O) -> '\Tquesse\Tanna'
+consonante(c | C) vocal(u | U) -> '\Tquesse\Tvala'
+consonante(c | C) vocal(á | Á) -> '\Tquesse\Tvilya\TTthreedots'
+consonante(c | C) vocal(ó | Ó) -> '\Tquesse\Tanna\TTrightcurl'
+consonante(c | C) vocal(ú | Ú) -> '\Tquesse\Tvala\TTleftcurl'
+
+consonante(k | K) vocal(a | A) -> '\Tquesse\Tvilya'
+consonante(k | K) vocal(e | E) -> '\Tquesse\Tyanta'
+consonante(k | K) vocal(i | I) -> '\Tquesse\Ttelco'
+consonante(k | K) vocal(o | O) -> '\Tquesse\Tanna'
+consonante(k | K) vocal(u | U) -> '\Tquesse\Tvala'
+consonante(k | K) vocal(á | Á) -> '\Tquesse\Tvilya\TTdoubler'
+consonante(k | K) vocal(é | É) -> '\Tquesse\Tyanta\TTdoubler'
+consonante(k | K) vocal(í | Í) -> '\Tquesse\Ttelco\TTdoubler'
+consonante(k | K) vocal(ó | Ó) -> '\Tquesse\Tanna\TTdoubler'
+consonante(k | K) vocal(ú | Ú) -> '\Tquesse\Tvala\TTdoubler'
+
+consonante(q | Q) vocal(u | U) vocal(e | E) -> '\Tquesse\Tyanta'
+consonante(q | Q) vocal(u | U) vocal(i | I) -> '\Tquesse\Ttelco'
+consonante(q | Q) vocal(u | U) vocal(é | É) -> '\Tquesse\Tyanta\TTdoubler'
+consonante(q | Q) vocal(u | U) vocal(í | Í) -> '\Tquesse\Ttelco\TTdoubler'
+
+consonante(d | D) -> '\Tando'
+
+consonante(b | B) -> '\Tumbar'
+
+consonante(g | G) vocal(a | A) -> '\Tungwe\Tvilya'
+consonante(g | G) vocal(u | U) vocal(e | E) -> '\Tungwe\Tyanta'
+consonante(g | G) vocal(u | U) vocal(i | I) -> '\Tungwe\Ttelco'
+consonante(g | G) vocal(o | O) -> '\Tungwe\Tanna'
+consonante(g | G) vocal(u | U) -> '\Tungwe\Tvala'  		
+
+consonante(g | G) vocal(á | Á) -> '\Tungwe\Tvilya\TTdoubler'
+consonante(g | G) vocal(u | U) vocal(é | É) -> '\Tungwe\Tyanta\TTdoubler'
+consonante(g | G) vocal(u | U) vocal(í | Í) -> '\Tungwe\Ttelco\TTdoubler'
+consonante(g | G) vocal(ó | Ó) -> '\Tungwe\Tanna\TTdoubler'
+consonante(g | G) vocal(ú | Ú) -> '\Tungwe\Tvala\TTdoubler' 	 
+consonante(g | G) vocal(ü | Ü) vocal(é | É) -> '\Tungwe\Tvala\Tyanta\TTdoubler'
+consonante(g | G) vocal(ü | Ü) vocal(í | Í) -> '\Tungwe\Tvala\Ttelco\TTdoubler'
+consonante(g | G) vocal(ü | Ü) vocal(e | E) -> '\Tungwe\Tvala\Tyanta'
+consonante(g | G) vocal(ü | Ü) vocal(i | I) -> '\Tungwe\Tvala\Ttelco'
+
+consonante(z | Z) -> '\Tthuule'
+consonante(c | C) vocal(e | E) -> '\Tthuule\Tyanta'
+consonante(c | C) vocal(i | I) -> '\Tthuule\Ttelco'
+consonante(c | C) vocal(é | É) -> '\Tthuule\Tyanta\TTdoubler'
+consonante(c | C) vocal(í | Í) -> '\Tthuule\Ttelco\TTdoubler'
+
+consonante(f | F) -> '\Tformen'
+
+consonante(j | J) -> '\Thwesta'
+consonante(g | G) vocal(e | E) -> '\Thwesta\Tyanta'
+consonante(g | G) vocal(i | I) -> '\Thwesta\Ttelco'
+consonante(g | G) vocal(é | É) -> '\Thwesta\Tyanta\TTdoubler'
+consonante(g | G) vocal(í | Í) -> '\Thwesta\Ttelco\TTdoubler'
+
+consonante(v | V) -> '\Tumbar' 						// En el modo fonético no se distingue la letra "uve", se iguala a la "be"
+
+y_griega consonante -> '\Tanca' consonante					// Y grieta consonántica
+consonante(l | L) consonante(l | L) -> '\Tanca'					// Sin distinguir la elle como tal (Se puede distinguir PENDIENTE)
+y_griega (espacio | cierre | EOF) -> '\Taara'	(conservando el resto)	// Y griega vocálica sin consumir lo siguiente
+
+consonante(n | N) -> '\Tnuumen'
+
+consonante(m | M) -> '\Tmalta'
+
+consonante(ñ | Ñ) -> '\Tnoldo'
+
+(SOF | espacio | apertura) consonante(r | R) -> (SOF | espacio | apertura) '\Troomen' //Inicio de entrada de datos, después de espacio o apertura
+consonante(r | R) consonante(r | R) -> '\Troomen'
+consonante(r | R) -> '\Toore' 					     // A aplicar solo después de las anteriores
+
+consonante(w | W) -> '\Tumbar'					// Se iguala (en fonético) a la B 
+																					// (cabría elegir -PENDIENTE- que se iguale a "gu"-\Tungwe\Tvala)
+consonante(l | L) -> '\Tlambe'
+
+consonante(s | S) -> '\Tsilme'					// Fonéticamente, en algunos sitios no se distingue 
+																					// la s de la z/c por lo que cabría hacer que fuese como una \Tthuule
+																					
+																					// NOTA: \Tsilmenuquerna se puede usar con vocales theta si después va una vocal. (para que quede bonito)
+																					
+consonante(h | H) -> '' 	// Fonético no lleva representación. NOTA: Si se quiere representar la letra H habría que usar \Thyarmen
+
+consonante(x | X) -> '\Tquesse\Tlefthook'
+
+vocal(a | A) -> '\Tvilya'
+vocal(e | E) -> '\Tyanta'
+vocal(i | I) -> '\Ttelco'
+vocal(o | O) -> '\Tanna'
+vocal(u | U) -> '\Tvala'
+vocal(á | Á) -> '\Tvilya\Tdoubler'
+vocal(é | É) -> '\Tyanta\Tdoubler'
+vocal(í | Í) -> '\Ttelco\Tdoubler'
+vocal(ó | Ó) -> '\Tanna\Tdoubler'
+vocal(ú | Ú) -> '\Tvala\Tdoubler'
+
+puntuacion(.) -> '\Tcolon'
+puntuacion(;) -> '\Tcolon'
+puntuacion(,) -> '\Tcentereddot'
+puntuacion(:) -> '\Tcolon'
+
+apertura(") -> '\Tromandblquoteleft'
+cierre(") -> '\Tromandblquoteright'
+apertura(') -> '\Tromanquoteleft'
+cierre(') -> '\Tromanquoteright'
+
+apertura(¿) -> ''
+apertura(¡) -> ''
+cierre(?) -> '\Tquestion'
+cierre(!) -> '\Texclamation'
+
+espacio -> ' ' 
+
+===== Gramática básica (vocales tengwar - fonética) =====
+
+==== Tabla de traducción a tengwarscript (entrada -> salida) ====
+
+consonante(t | T) -> '\Ttinco' ;
+
+consonante(p | P) -> '\Tparma' ;
+
+consonante(c | C) consonante(h) -> '\Tcalma' ;
+
+consonante(c | C) vocal(a | A) -> '\Tquesse\Tvilya'
+consonante(c | C) vocal(o | O) -> '\Tquesse\Tanna'
+consonante(c | C) vocal(u | U) -> '\Tquesse\Tvala'
+consonante(c | C) vocal(á | Á) -> '\Tquesse\Tvilya\TTthreedots'
+consonante(c | C) vocal(ó | Ó) -> '\Tquesse\Tanna\TTrightcurl'
+consonante(c | C) vocal(ú | Ú) -> '\Tquesse\Tvala\TTleftcurl'
+
+consonante(k | K) vocal(a | A) -> '\Tquesse\Tvilya'
+consonante(k | K) vocal(e | E) -> '\Tquesse\Tyanta'
+consonante(k | K) vocal(i | I) -> '\Tquesse\Ttelco'
+consonante(k | K) vocal(o | O) -> '\Tquesse\Tanna'
+consonante(k | K) vocal(u | U) -> '\Tquesse\Tvala'
+consonante(k | K) vocal(á | Á) -> '\Tquesse\Tvilya\TTdoubler'
+consonante(k | K) vocal(é | É) -> '\Tquesse\Tyanta\TTdoubler'
+consonante(k | K) vocal(í | Í) -> '\Tquesse\Ttelco\TTdoubler'
+consonante(k | K) vocal(ó | Ó) -> '\Tquesse\Tanna\TTdoubler'
+consonante(k | K) vocal(ú | Ú) -> '\Tquesse\Tvala\TTdoubler'
+
+consonante(q | Q) vocal(u | U) vocal(e | E) -> '\Tquesse\Tyanta'
+consonante(q | Q) vocal(u | U) vocal(i | I) -> '\Tquesse\Ttelco'
+consonante(q | Q) vocal(u | U) vocal(é | É) -> '\Tquesse\Tyanta\TTdoubler'
+consonante(q | Q) vocal(u | U) vocal(í | Í) -> '\Tquesse\Ttelco\TTdoubler'
+
+consonante(d | D) -> '\Tando'
+
+consonante(b | B) -> '\Tumbar'
+
+consonante(g | G) vocal(a | A) -> '\Tungwe\Tvilya'
+consonante(g | G) vocal(u | U) vocal(e | E) -> '\Tungwe\Tyanta'
+consonante(g | G) vocal(u | U) vocal(i | I) -> '\Tungwe\Ttelco'
+consonante(g | G) vocal(o | O) -> '\Tungwe\Tanna'
+consonante(g | G) vocal(u | U) -> '\Tungwe\Tvala'  		
+
+consonante(g | G) vocal(á | Á) -> '\Tungwe\Tvilya\TTdoubler'
+consonante(g | G) vocal(u | U) vocal(é | É) -> '\Tungwe\Tyanta\TTdoubler'
+consonante(g | G) vocal(u | U) vocal(í | Í) -> '\Tungwe\Ttelco\TTdoubler'
+consonante(g | G) vocal(ó | Ó) -> '\Tungwe\Tanna\TTdoubler'
+consonante(g | G) vocal(ú | Ú) -> '\Tungwe\Tvala\TTdoubler' 	 
+consonante(g | G) vocal(ü | Ü) vocal(é | É) -> '\Tungwe\Tvala\Tyanta\TTdoubler'
+consonante(g | G) vocal(ü | Ü) vocal(í | Í) -> '\Tungwe\Tvala\Ttelco\TTdoubler'
+consonante(g | G) vocal(ü | Ü) vocal(e | E) -> '\Tungwe\Tvala\Tyanta'
+consonante(g | G) vocal(ü | Ü) vocal(i | I) -> '\Tungwe\Tvala\Ttelco'
+
+consonante(z | Z) -> '\Tthuule'
+consonante(c | C) vocal(e | E) -> '\Tthuule\Tyanta'
+consonante(c | C) vocal(i | I) -> '\Tthuule\Ttelco'
+consonante(c | C) vocal(é | É) -> '\Tthuule\Tyanta\TTdoubler'
+consonante(c | C) vocal(í | Í) -> '\Tthuule\Ttelco\TTdoubler'
+
+consonante(f | F) -> '\Tformen'
+
+consonante(j | J) -> '\Thwesta'
+consonante(g | G) vocal(e | E) -> '\Thwesta\Tyanta'
+consonante(g | G) vocal(i | I) -> '\Thwesta\Ttelco'
+consonante(g | G) vocal(é | É) -> '\Thwesta\Tyanta\TTdoubler'
+consonante(g | G) vocal(í | Í) -> '\Thwesta\Ttelco\TTdoubler'
+
+consonante(v | V) -> '\Tumbar' 						// En el modo fonético no se distingue la letra "uve", se iguala a la "be"
+
+y_griega consonante -> '\Tanca' consonante					// Y grieta consonántica
+consonante(l | L) consonante(l | L) -> '\Tanca'					// Sin distinguir la elle como tal (Se puede distinguir PENDIENTE)
+y_griega (espacio | cierre | EOF) -> '\Taara'	(conservando el resto)	// Y griega vocálica sin consumir lo siguiente
+
+consonante(n | N) -> '\Tnuumen'
+
+consonante(m | M) -> '\Tmalta'
+
+consonante(ñ | Ñ) -> '\Tnoldo'
+
+(SOF | espacio | apertura) consonante(r | R) -> (SOF | espacio | apertura) '\Troomen' //Inicio de entrada de datos, después de espacio o apertura
+consonante(r | R) consonante(r | R) -> '\Troomen'
+consonante(r | R) -> '\Toore' 					     // A aplicar solo después de las anteriores
+
+consonante(w | W) -> '\Tumbar'					// Se iguala (en fonético) a la B 
+																					// (cabría elegir -PENDIENTE- que se iguale a "gu"-\Tungwe\Tvala)
+consonante(l | L) -> '\Tlambe'
+
+consonante(s | S) -> '\Tsilme'					// Fonéticamente, en algunos sitios no se distingue 
+																					// la s de la z/c por lo que cabría hacer que fuese como una \Tthuule
+																					
+																					// NOTA: \Tsilmenuquerna se puede usar con vocales theta si después va una vocal. (para que quede bonito)
+																					
+consonante(h | H) -> '' 	// Fonético no lleva representación. NOTA: Si se quiere representar la letra H habría que usar \Thyarmen
+
+consonante(x | X) -> '\Tquesse\Tlefthook'
+
+vocal(a | A) -> '\Tvilya'
+vocal(e | E) -> '\Tyanta'
+vocal(i | I) -> '\Ttelco'
+vocal(o | O) -> '\Tanna'
+vocal(u | U) -> '\Tvala'
+vocal(á | Á) -> '\Tvilya\Tdoubler'
+vocal(é | É) -> '\Tyanta\Tdoubler'
+vocal(í | Í) -> '\Ttelco\Tdoubler'
+vocal(ó | Ó) -> '\Tanna\Tdoubler'
+vocal(ú | Ú) -> '\Tvala\Tdoubler'
+
+puntuacion(.) -> '\Tcolon'
+puntuacion(;) -> '\Tcolon'
+puntuacion(,) -> '\Tcentereddot'
+puntuacion(:) -> '\Tcolon'
+
+apertura(") -> '\Tromandblquoteleft'
+cierre(") -> '\Tromandblquoteright'
+apertura(') -> '\Tromanquoteleft'
+cierre(') -> '\Tromanquoteright'
+
+apertura(¿) -> ''
+apertura(¡) -> ''
+cierre(?) -> '\Tquestion'
+cierre(!) -> '\Texclamation'
+
+espacio -> ' ' 

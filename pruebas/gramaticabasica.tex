@@ -1,0 +1,134 @@
+\documentclass{minimal}
+\usepackage{fontspec}
+\usepackage[annatar]{tengwarscript}
+\begin{document}
+    gramática básica
+    ================
+    Created martes 15 noviembre 2016
+    
+    Voy a describir la gramática siguiendo la sintaxis de ANTRL
+    
+    Gramática - léxico básico
+    -------------------------
+    
+    vocal\_sin\_acento	: 'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U' ;
+    
+    vocal\_con\_acento	: 'á' | 'é' | 'í' | 'ó' | 'ú' | 'Á' | 'É' | 'Í' | 'Ó' | 'Ú' ;
+    
+    vocal\_con\_dieresis	: 'ü' | 'Ü' ;
+    
+    y\_griega		: y | 'Y' ;							// puede actuar como vocal (final de palabra) 
+    
+    // o como consonante (resto de casos)
+    
+    vocal			: vocal\_sin\_acento | vocal\_con\_acento | vocal\_con\_dieresis ;
+    
+    consonante		: 'b' | 'B' | 'c' | 'C' | 'd' | 'D' | 'f' | 'F' | 'g' | 'G' |
+    
+    'h' | 'H' | 'j' | 'J' | 'k' | 'K' | 'l' | 'L' | 'm' | 'M' |
+    
+    'n' | 'N' | 'ñ' | 'Ñ' | 'p' | 'P' | 'q' | 'Q' | 'r' | 'R' |
+    
+    's' | 'S' | 't' | 'T' | 'v' | 'V' | 'w' | 'W' | 'x' | 'X' |
+    
+    'z' | 'Z' ;
+    
+    apertura\_excl		: '¡' ;
+    
+    cierre\_excl		: '!' ;
+    
+    apertura\_interrog	: '¿' ;
+    
+    cierre\_interrog		: '?' ;
+    
+    puntuacion		: '.' | ';' | ':' | ','
+    
+    espacio\_blanco		: ' '+ ; 							 // uno o más espacios en blanco
+    
+    palabra			: (vocal | consonante | puntuacion) + ;
+    
+    continuacion\_frase	: EOF | espacio\_blanco frase ;					// EOF o espacio en blanco seguido de una frase
+    
+    frase			: palabra | palabra continuacion\_frase | 			// Símbolo raiz del analizador lexicográfico
+    
+    apertura\_excl frase cierre\_excl |
+    
+    apertura\_interrog frase cierre\_interrog ;
+    
+    
+    Gramática básica (vocales plenas - fonética)
+    --------------------------------------------
+    
+    --- Tabla de traducción a tengwarscript (entrada -> salida)
+    
+    consonante(t | T) -> '\Ttinco' ;
+    
+    consonante(p | P) -> '\Tparma' ;
+    
+    consonante(c | C) consonante(h) -> '\Tcalma' ;
+    
+    consonante(c | C) vocal(a | A) -> '\Tquesse\Tvilya'
+    
+    consonante(c | C) vocal(o | O) -> '\Tquesse\Tanna'
+    
+    consonante(c | C) vocal(u | U) -> '\Tquesse\Tvala'
+    
+    consonante(c | C) vocal(á | Á) -> '\Tquesse\Tvilya\TTthreedots'
+    
+    consonante(c | C) vocal(ó | Ó) -> '\Tquesse\Tanna\TTrightcurl'
+    
+    consonante(c | C) vocal(ú | Ú) -> '\Tquesse\Tvala\TTleftcurl'
+    
+    consonante(k | K) vocal(a | A) -> '\Tquesse\Tvilya'
+    
+    consonante(k | K) vocal(e | E) -> '\Tquesse\Tyanta'
+    
+    consonante(k | K) vocal(i | I) -> '\Tquesse\Ttelco'
+    
+    consonante(k | K) vocal(o | O) -> '\Tquesse\Tanna'
+    
+    consonante(k | K) vocal(u | U) -> '\Tquesse\Tvala'
+    
+    consonante(k | K) vocal(á | Á) -> '\Tquesse\Tvilya\TTdoubler'
+    
+    consonante(k | K) vocal(é | É) -> '\Tquesse\Tyanta\TTdoubler'
+    
+    consonante(k | K) vocal(í | Í) -> '\Tquesse\Ttelco\TTdoubler'
+    
+    consonante(k | K) vocal(ó | Ó) -> '\Tquesse\Tanna\TTdoubler'
+    
+    consonante(k | K) vocal(ú | Ú) -> '\Tquesse\Tvala\TTdoubler'
+    
+    consonante(q | Q) vocal(u | U) vocal(e | E) -> '\Tquesse\Tyanta'
+    
+    consonante(q | Q) vocal(u | U) vocal(i | I) -> '\Tquesse\Ttelco'
+    
+    consonante(q | Q) vocal(u | U) vocal(é | É) -> '\Tquesse\Tyanta\TTdoubler'
+    
+    consonante(q | Q) vocal(u | U) vocal(í | Í) -> '\Tquesse\Ttelco\TTdoubler'
+    
+    consonante(d | D) vocal(a | A) -> '\Tando\Tvilya'
+    
+    consonante(d | D) vocal(e | E) -> '\Tando\Tyanta'
+    
+    consonante(d | D) vocal(i | I) -> '\Tando\Ttelco'
+    
+    consonante(d | D) vocal(o | O) -> '\Tando\Tanna'
+    
+    consonante(d | D) vocal(u | U) -> '\Tando\Tvala'
+    
+    consonante(d | D) vocal(á | Á) -> '\Tando\Tvilya\TTdoubler'
+    
+    consonante(d | D) vocal(é | É) -> '\Tando\Tyanta\TTdoubler'
+    
+    consonante(d | D) vocal(í | Í) -> '\Tando\Ttelco\TTdoubler'
+    
+    consonante(d | D) vocal(ó | Ó) -> '\Tando\Tanna\TTdoubler'
+    
+    consonante(d | D) vocal(ú | Ú) -> '\Tando\Tvala\TTdoubler'
+    
+    
+    consonante(x | X) -> '\Tquesse\Tlefthook'
+    
+    
+\end{document}
