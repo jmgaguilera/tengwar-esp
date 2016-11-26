@@ -19,7 +19,8 @@ Características generales de la aplicación que quiero hacer:
 
 [ ] Crear una librería que convierta de tengwar a tengwarscript (latex). (De aquí a la conversión de símbolos se debe tardar poco)
 	[ ] Crear la [[gramática básica]] para las reglas obligatorias de tengwar modo español
-	[ ] Crear unos test de javascript de prueba completa de la gramática.
+	[ ] Crear unos test de javascript de prueba completa de la gramática. (supongo que debería usar mocha)
 	[ ] Ampliarlo para que convierta en pantalla.
 	[ ] Ampliarlo para incorporar varios tipos de letra.
+	[ ] Ampliarlo para las diferentes alternativas: letras plenas o diacríticas, reglas opcionales del español.
 

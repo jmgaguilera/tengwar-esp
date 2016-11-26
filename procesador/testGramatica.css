@@ -1,0 +1,11 @@
+td {text-align: center;}
+
+@font-face {
+  font-family: Tengwar Annatar;
+  src: local("Tengwar Annatar") url(font/tngan.ttf) format("opentype");
+
+}
+
+
+.tengwar {font-family: Tengwar Annatar;}
+

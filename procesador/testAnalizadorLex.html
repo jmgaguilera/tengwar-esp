@@ -1,0 +1,118 @@
+<meta charset="utf-8">
+
+<html>
+      <script src="gramatica.js"></script>
+  <head>
+
+  </head>
+
+  <body>
+
+    <h1>Prueba del analizador lexicográfico</h1>
+<p>
+   Se ha ejecutado el script de prueba. Mostrar la consola del navegador para ver el resultado.
+    </p>
+
+    <script>
+'use strict';
+
+// prueba
+var prueba = new AnalizadorLex('aeiou');
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+
+prueba = new AnalizadorLex('');
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+
+
+prueba = new AnalizadorLex('df');
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+
+prueba = new AnalizadorLex('^*');
+console.log(prueba.nextToken().toString());
+try {
+  console.log(prueba.nextToken().toString());
+  console.log("ERROR, no ha lanzado el catch");
+} catch (e) {
+  console.log("Correcto, se ha producido el error esperado -> "+e);
+}
+
+prueba = new AnalizadorLex("¿cómo?");
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+
+prueba = new AnalizadorLex('"cómo"');
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+
+
+prueba = new AnalizadorLex('¡cómo');
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+try {
+  console.log(prueba.nextToken().toString());
+  console.log("ERROR: debería detectar que no se ha cerrado la exclamación");
+} catch (e) {
+  console.log("CORRECTO: Ha detectado que no se ha cerrado la exclamación");
+}
+
+
+prueba = new AnalizadorLex("cómo?");
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+try {
+  console.log(prueba.nextToken().toString());
+  console.log("ERROR: debería detectar cierre de interrogación erróneo");
+} catch (e) {
+  console.log("CORRECTO: ha detectado cierre de interrogación sin apertura");
+}
+
+
+prueba = new AnalizadorLex("a      ei");
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+
+
+prueba = new AnalizadorLex("   a     ");
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+console.log(prueba.nextToken().toString());
+
+    </script>
+  </body>
+</html>
