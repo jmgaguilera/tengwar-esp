@@ -230,7 +230,7 @@ function ReglaSimple(caracteres, resultado, tengwarscript, numConsume) {
         },
         function(tokens, tokens_consumidos) {
 
-          i = numConsume;
+          var i = numConsume;
           while (i>0) {
             tokens_consumidos.push(tokens[0]);
             tokens.shift();
@@ -261,7 +261,7 @@ function ReglaDoble(caracteres1, caracteres2, resultado, tengwarscript, numConsu
         },
         function(tokens, tokens_consumidos) {
 
-          i = numConsume;
+          var i = numConsume;
           while (i>0) {
             tokens_consumidos.push(tokens[0]);
             tokens.shift();
@@ -293,7 +293,7 @@ function ReglaTriple(caracteres1, caracteres2, caracteres3, resultado, tengwarsc
         },
         function(tokens, tokens_consumidos) {
 
-          i = numConsume;
+          var i = numConsume;
           while (i>0) {
             tokens_consumidos.push(tokens[0]);
             tokens.shift();
@@ -453,6 +453,8 @@ var reglas = [
   new ReglaDoble(['c', 'C'], ['Ú', 'ú'], 'zy;', '\\Tquesse\\Tvala\\TTdoubler', 2),
   new ReglaDoble(['k', 'K'], ['Ú', 'ú'], 'zy;', '\\Tquesse\\Tvala\\TTdoubler', 2),
 
+  new ReglaSimple(['c', 'C'], 'z', '\\Tquesse', 1),
+
   new ReglaDoble(['k', 'K'], ['e', 'E'], 'zl', '\\Tquesse\\Tyanta', 2),
   new ReglaTriple(['q', 'Q'], ['u', 'U'], ['e', 'E'], 'zl', '\\Tquesse\\Tyanta', 3),
 
@@ -485,6 +487,8 @@ var reglas = [
   new ReglaTriple(['g', 'G'], ['ü','Ü'], ['í', 'Í'], 'xy`;', '\\Tungwe\\Tvala\\Ttelco\\TTdoubler', 3),
   new ReglaTriple(['g', 'G'], ['ü','ü'], ['e', 'E'], 'xyl', '\\Tungwe\\Tvala\\Tyanta', 3),
   new ReglaTriple(['g', 'G'], ['ü','Ü'], ['i', 'I'], 'xy`', '\\Tungwe\\Tvala\\Ttelco', 3),
+  new ReglaSimple(['g', 'G'], 'x', '\\Tungwe', 1),
+
 
   new ReglaSimple(['z', 'Z'], '3', '\\Tthuule', 1),
 
@@ -611,6 +615,7 @@ AnalizadorSintactico.prototype.getTengwarscript = function() {
   return this.transformado.map(
     function(t) {return t.codigoTengwarscript;}
   ).join('');
+
 }
 
 //TODO: Prueba interna de las reglas
@@ -632,10 +637,10 @@ console.log(regla.esValida(tokens));
 var resultado = regla.transformar(tokens);
 resultado
 
-
-var prueba = new AnalizadorSintactico('Esto es una patata');
-prueba.analizar();
+*/
+var prueba = new AnalizadorSintactico('acné');
+prueba.analizar('t');
 console.log(prueba.getAnnatar());
 console.log(prueba.getTengwarscript());
-*/
+
 

@@ -77,6 +77,8 @@ frase			: palabra | palabra continuacion_frase | // Símbolo raiz del analizador
 '\Tquesse\Tvala\TTdoubler'	-> consonante(c | C) vocal(ú | Ú) |
 											  consonante(k | K) vocal(ú | Ú) ;
 
+'\Tquesse' -> consonante(c | C);
+
 
 '\Tquesse\Tyanta' 		-> consonante(k | K) vocal(e | E) |
 											  consonante(q | Q) vocal(u | U) vocal(e | E) ;
@@ -116,6 +118,8 @@ frase			: palabra | palabra continuacion_frase | // Símbolo raiz del analizador
 '\Tungwe\Tvala\Ttelco\TTdoubler' -> consonante(g | G) vocal(ü | Ü) vocal(í | Í)
 '\Tungwe\Tvala\Tyanta' -> consonante(g | G) vocal(ü | Ü) vocal(e | E)
 '\Tungwe\Tvala\Ttelco' -> consonante(g | G) vocal(ü | Ü) vocal(i | I)
+
+'\Tungwe' -> consonante(g | G)
 
 '\Tthuule' -> consonante(z | Z)
 '\Tthuule\Tyanta'           -> consonante(c | C) vocal(e | E)
