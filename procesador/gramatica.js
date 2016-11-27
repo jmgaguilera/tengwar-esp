@@ -21,7 +21,9 @@ var TipoToken = [
 
 ]
 
-var espacios = ['.', ';', ':', ','];
+var puntos = ['.', ';', ':', ','];
+var espacios = [' ', '\t', '\r', '\n'];
+
 
 function Token(tipo, texto) {
   this.tipo = tipo;
@@ -177,12 +179,12 @@ AnalizadorLex.prototype.obtenerToken = function(c) {
     this.posicion += 1;
     this.en_comillas -= 1;
 
-  } else if (espacios.indexOf(c) >= 0) {
+  } else if (puntos.indexOf(c) >= 0) {
 
     token = new Token('PUNTUACION', c);
     this.posicion += 1;
 
-  } else if ( [' ', '\t', '\r', '\n'].indexOf(c) >= 0) {
+  } else if ( espacios.indexOf(c) >= 0) {
 
     while (this.posicion+1 < this.entrada.length &&
            [' ', '\t', '\r', '\n'].indexOf(this.entrada[this.posicion+1]) >= 0) {
@@ -631,7 +633,7 @@ var resultado = regla.transformar(tokens);
 resultado
 
 
-var prueba = new AnalizadorSintactico('agua');
+var prueba = new AnalizadorSintactico('Esto es una patata');
 prueba.analizar();
 console.log(prueba.getAnnatar());
 console.log(prueba.getTengwarscript());
