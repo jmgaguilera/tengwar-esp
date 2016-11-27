@@ -59,7 +59,7 @@ frase			: palabra | palabra continuacion_frase | // Símbolo raiz del analizador
 
 '\Tparma' 			-> consonante(p | P)  ;
 
-'\Tcalma' 			-> consonante(c | C) consonante(h);
+'\Tcalma' 			-> consonante(c | C) consonante(h | H);
 
 '\Tquesse\Tvilya' 		-> consonante(c | C) vocal(a | A) |
 											  consonante(k | K) vocal(a | A) ;
@@ -70,27 +70,26 @@ frase			: palabra | palabra continuacion_frase | // Símbolo raiz del analizador
 '\Tquesse\Tvala' 		-> consonante(c | C) vocal(u | U) |
 											  consonante(k | K) vocal(u | U) ;
 
-'\Tquesse\Tvilya\TTthreedots' 	-> consonante(c | C) vocal(á | Á)
-'\Tquesse\Tanna\TTrightcurl' 	-> consonante(c | C) vocal(ó | Ó)
-'\Tquesse\Tvala\TTleftcurl'	-> consonante(c | C) vocal(ú | Ú)
+'\Tquesse\Tvilya\TTdoubler' 	-> consonante(c | C) vocal(á | Á) |
+											  consonante(k | K) vocal(á | Á) ;
+'\Tquesse\Tanna\TTdoubler' 	-> consonante(c | C) vocal(ó | Ó) |
+										consonante(k | K) vocal(ó | Ó) ;
+'\Tquesse\Tvala\TTdoubler'	-> consonante(c | C) vocal(ú | Ú) |
+											  consonante(k | K) vocal(ú | Ú) ;
+
 
 '\Tquesse\Tyanta' 		-> consonante(k | K) vocal(e | E) |
-						 consonante(q | Q) vocal(u | U) vocal(e | E) ;
+											  consonante(q | Q) vocal(u | U) vocal(e | E) ;
 
 '\Tquesse\Ttelco' 		-> consonante(k | K) vocal(i | I) |
-						 consonante(q | Q) vocal(u | U) vocal(i | I) ;
+											  consonante(q | Q) vocal(u | U) vocal(i | I) ;
 
-
-'\Tquesse\Tvilya\TTdoubler'  -> consonante(k | K) vocal(á | Á)
 
 '\Tquesse\Tyanta\TTdoubler'  -> consonante(k | K) vocal(é | É) |
 								consonante(q | Q) vocal(u | U) vocal(é | É) ;
 
 '\Tquesse\Ttelco\TTdoubler'  -> consonante(k | K) vocal(í | Í) |
 								consonante(q | Q) vocal(u | U) vocal(í | Í) ;
-
-'\Tquesse\Tanna\TTdoubler'   -> consonante(k | K) vocal(ó | Ó)
-'\Tquesse\Tvala\TTdoubler'   -> consonante(k | K) vocal(ú | Ú)
 
 
 '\Tando' -> consonante(d | D)
@@ -112,6 +111,7 @@ frase			: palabra | palabra continuacion_frase | // Símbolo raiz del analizador
 '\Tungwe\Ttelco\TTdoubler' -> consonante(g | G) vocal(u | U) vocal(í | Í)
 '\Tungwe\Tanna\TTdoubler' -> consonante(g | G) vocal(ó | Ó)
 '\Tungwe\Tvala\TTdoubler' ->	 consonante(g | G) vocal(ú | Ú)
+
 '\Tungwe\Tvala\Tyanta\TTdoubler' -> consonante(g | G) vocal(ü | Ü) vocal(é | É)
 '\Tungwe\Tvala\Ttelco\TTdoubler' -> consonante(g | G) vocal(ü | Ü) vocal(í | Í)
 '\Tungwe\Tvala\Tyanta' -> consonante(g | G) vocal(ü | Ü) vocal(e | E)
@@ -134,18 +134,19 @@ frase			: palabra | palabra continuacion_frase | // Símbolo raiz del analizador
 
 // Y grieta consonántica
 // Sin distinguir la elle como tal (Se puede distinguir PENDIENTE)
-'\Tanca' consonante ->	y_griega consonante |
+'\Tanca' vocal ->	y_griega vocal |
 							  consonante(l | L) consonante(l | L) ;
 
 // Y griega vocálica sin consumir lo siguiente
-'\Taara' (conservando el resto) -> y_griega (espacio | cierre | EOF) ;
+'\Taara' (conservando el resto) -> y_griega !vocal ;
 
 '\Tnuumen' -> consonante(n | N)
 '\Tmalta'  -> consonante(m | M)
 '\Tnoldo'  -> consonante(ñ | Ñ)
 
 //Inicio de entrada de datos, después de espacio o apertura
-(SOF | espacio | apertura) '\Troomen' -> (SOF | espacio | apertura) consonante(r | R)
+(IOF | espacio | apertura) '\Troomen' -> (IOF | espacio | apertura) consonante(r | R)
+'' -> IOF;
 
 '\Troomen' -> consonante(r | R) consonante(r | R)
 
@@ -158,6 +159,7 @@ frase			: palabra | palabra continuacion_frase | // Símbolo raiz del analizador
 													// la s de la z/c por lo que cabría hacer que fuese como una \Tthuule
 
 // NOTA: \Tsilmenuquerna se puede usar con vocales theta si después va una vocal. (para que quede bonito)
+// PENDIENTE
 '\Tsilmenuquerna' vocal -> consonante(s | S) vocal;
 
 '' -> consonante(h | H)  // Fonético no lleva representación. NOTA: Si se quiere representar la letra H habría que usar \Thyarmen
