@@ -134,6 +134,14 @@
         <td></td>
       </tr>
       <tr>
+        <td>agüita</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+
+      <tr>
         <td>hace</td>
         <td class="tengwar"></td>
         <td></td>
@@ -337,21 +345,84 @@
         <td></td>
       </tr>
           <tr>
-        <td></td>
+        <td>ogro</td>
         <td class="tengwar"></td>
         <td></td>
         <td class="tengwar"></td>
         <td></td>
       </tr>
           <tr>
-        <td></td>
+        <td>magno</td>
         <td class="tengwar"></td>
         <td></td>
         <td class="tengwar"></td>
         <td></td>
       </tr>
           <tr>
+        <td>gema</td>
+        <td class="tengwar"></td>
         <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>ágil</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>yo</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>hay</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>carro</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>caro</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td>res</td>
+      </tr>
+          <tr>
+        <td>croa</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>par</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>aeiou</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+            <td>ratón</td>
         <td class="tengwar"></td>
         <td></td>
         <td class="tengwar"></td>
@@ -367,6 +438,457 @@
          row = test_plena.rows[l];
          texto_entrada = row.cells[0].innerHTML.toString();
          analizador = new AnalizadorSintactico(texto_entrada);
+         try {
+           analizador.analizar();
+           row.cells[3].innerHTML = analizador.getAnnatar();
+           row.cells[4].innerHTML = analizador.getTengwarscript();
+           if (row.cells[3].innerHTML !== row.cells[1].innerHTML) {
+             row.cells[3].style.backgroundColor = 'yellow';
+           }
+           if (row.cells[4].innerHTML !== row.cells[2].innerHTML) {
+             row.cells[4].style.backgroundColor = 'yellow';
+           }
+         } catch (e) {
+          row.cells[4].innerHTML = e.toString();
+         }
+      }
+
+    </script>
+
+        <h2>
+      Pruebas de gramática con vocales "tehtar"
+    </h2>
+
+    <table id="test_tehtar">
+      <tr><th>Entrada</th>
+        <th>Resultado esperado</th>
+        <th>Tengwarscript esperado</th>
+        <th>Resultado</th>
+        <th>Tengwarscript</th>
+      </tr>
+      <tr>
+        <td>t</td>
+        <td class="tengwar">1</td>
+        <td>\Ttinco</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>p</td>
+        <td class="tengwar">q</td>
+        <td>\Tparma</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ch</td>
+        <td class="tengwar">a</td>
+        <td>\Tcalma</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ca</td>
+        <td class="tengwar">zn</td>
+        <td>\Tquesse\Tvilya</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ka</td>
+        <td class="tengwar">zn</td>
+        <td>\Tquesse\Tvilya</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ká</td>
+        <td class="tengwar">zn;</td>
+        <td>\Tquesse\Tvilya\TTdoubler</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>cokó cucú</td>
+        <td class="tengwar">zn</td>
+        <td>\Tquesse\Tvilya</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>qui</td>
+        <td class="tengwar">z`</td>
+        <td>\Tquesse\Ttelco</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>aquí</td>
+        <td class="tengwar">z`</td>
+        <td>\Tquesse\Ttelco</td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>apea</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ocho</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>eco</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>aquel</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>hada</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>hubo</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>hago</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>águila</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+            <tr>
+        <td>agüita</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>hace</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>hizo</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>afán</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ajo</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ágil</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>uva</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>haya</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>uno</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ama</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>año</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ara</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Wagner</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>uso</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ola</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ave</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>arrea</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ala</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ella</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>asa</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ahí</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>era</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>axioma</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>hilo</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>y</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>eco</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>acre</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>acné</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>cima</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>acción</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>ogro</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>magno</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>gema</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>ágil</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>yo</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>hay</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>carro</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>caro</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td>res</td>
+      </tr>
+          <tr>
+        <td>croa</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>par</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+        <td>aeiou</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+          <tr>
+            <td>ratón</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
+    </table>
+
+    <script type="text/javascript">
+      'use strict';
+      var entrada, texto_entrada, analizador;
+      var l, row;
+      for (l = 1; l<test_plena.rows.length; l++) {
+         row = test_tehtar.rows[l];
+         texto_entrada = row.cells[0].innerHTML.toString();
+         analizador = new AnalizadorSintactico(texto_entrada, { vocales: "tehtar"});
          try {
            analizador.analizar();
            row.cells[3].innerHTML = analizador.getAnnatar();

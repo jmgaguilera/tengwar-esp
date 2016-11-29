@@ -116,7 +116,7 @@ AnalizadorLex.prototype.obtenerToken = function(c) {
     token = new Token('VOCAL_CON_ACENTO', c);
     this.posicion += 1;
 
-  } else if (['ü̈́', 'Ü'].indexOf(c) >= 0) {
+  } else if (['ü', 'Ü'].indexOf(c) >= 0) {
 
     token = new Token('VOCAL_CON_DIERESIS', c);
     this.posicion += 1;
@@ -362,7 +362,7 @@ ReglaYVocal.prototype = Object.create(Regla.prototype);
 
 // validador-transformador R de inicio de palabra
 function ReglaRInicio() {
-  this.consume = 1;
+  this.consume = 2; // En realidad consume uno pero tiene que tener más peso ya que mira en el anterior (como si fuesen dos)
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 1 && tokens_consumidos.length >= 1 &&
@@ -434,7 +434,9 @@ function ReglaComillaCierre() {
 
 ReglaComillaCierre.prototype = Object.create(Regla.prototype);
 
-var reglas = [
+
+// ********** REGLAS PLENAS **********************//
+var reglas_plenas = [
   new ReglaSimple(['t', 'T'], '1', '\\Ttinco', 1),
   new ReglaSimple(['p', 'P'], 'q', '\\Tparma', 1),
   new ReglaDoble(['c', 'C'], ['h', 'H'], 'a', '\\Tcalma', 2),
@@ -555,8 +557,142 @@ var reglas = [
   ];
 
 
-function AnalizadorSintactico(texto){
+// ********** REGLAS TEHTAR **********************//
+var reglas_tehtar = [
+  new ReglaSimple(['t', 'T'], '1', '\\Ttinco', 1),
+  new ReglaSimple(['p', 'P'], 'q', '\\Tparma', 1),
+  new ReglaDoble(['c', 'C'], ['h', 'H'], 'a', '\\Tcalma', 2),
+
+  new ReglaDoble(['c', 'C'], ['A', 'a'], 'zE', '\\Tquesse\\TTthreedots', 2),
+  new ReglaDoble(['k', 'K'], ['A', 'a'], 'zE', '\\Tquesse\\TTthreedots', 2),
+  new ReglaDoble(['c', 'C'], ['O', 'o'], 'zY', '\\Tquesse\\TTrightcurl', 2),
+  new ReglaDoble(['k', 'K'], ['O', 'o'], 'zY', '\\Tquesse\\TTrightcurl', 2),
+  new ReglaDoble(['c', 'C'], ['U', 'u'], 'zU', '\\Tquesse\\TTleftcurl', 2),
+  new ReglaDoble(['k', 'K'], ['U', 'u'], 'zU', '\\Tquesse\\TTleftcurl', 2),
+
+  new ReglaDoble(['c', 'C'], ['Á', 'á'], 'z~C', '\\Tquesse\\Taara\\TTthreedots', 2),
+  new ReglaDoble(['k', 'K'], ['Á', 'á'], 'z~C', '\\Tquesse\\Taara\\TTthreedots', 2),
+
+
+  new ReglaDoble(['c', 'C'], ['Ó', 'ó'], 'z~N', '\\Tquesse\\Taara\\TTrightcurl', 2),
+  new ReglaDoble(['k', 'K'], ['Ó', 'ó'], 'z~N', '\\Tquesse\\Taara\\TTrightcurl', 2),
+  new ReglaDoble(['c', 'C'], ['Ú', 'ú'], 'z~M', '\\Tquesse\\Taara\\TTleftcurl', 2),
+  new ReglaDoble(['k', 'K'], ['Ú', 'ú'], 'z~M', '\\Tquesse\\Taara\\TTleftcurl', 2),
+
+  new ReglaSimple(['c', 'C'], 'z', '\\Tquesse', 1),
+
+  new ReglaDoble(['k', 'K'], ['e', 'E'], 'zR', '\\Tquesse\\TTacute', 2),
+  new ReglaTriple(['q', 'Q'], ['u', 'U'], ['e', 'E'], 'zR', '\\Tquesse\\TTacute', 3),
+
+  new ReglaDoble(['k', 'K'], ['i', 'I'], 'zT', '\\Tquesse\\TTdot', 2),
+  new ReglaTriple(['q', 'Q'], ['u', 'U'], ['i', 'I'], 'zT', '\\Tquesse\\TTdot', 3),
+
+  new ReglaDoble(['k', 'K'], ['é', 'É'], 'z~V', '\\Tquesse\\Taara\\TTacute', 2),
+  new ReglaTriple(['q', 'Q'], ['u', 'U'], ['é', 'É'], 'z~V', '\\Tquesse\\Taara\\TTacute', 3),
+
+  new ReglaDoble(['k', 'K'], ['í', 'Í'], 'z~B', '\\Tquesse\\Taara\\TTdot', 2),
+  new ReglaTriple(['q', 'Q'], ['u', 'U'], ['í', 'Í'], 'z~B', '\\Tquesse\\Taara\\TTdot', 3),
+
+  new ReglaSimple(['d', 'D'], '2', '\\Tando', 1),
+
+  new ReglaSimple(['b', 'B', 'v', 'V', 'w', 'W'], 'w', '\\Tumbar', 1),
+
+  new ReglaDoble(['g', 'G'], ['a', 'A'], 'x#', '\\Tungwe\\TTthreedots', 2),
+  new ReglaTriple(['g', 'G'], ['u','U'], ['e', 'E'], 'x$', '\\Tungwe\\TTacute', 3),
+  new ReglaTriple(['g', 'G'], ['u','U'], ['i', 'I'], 'x%', '\\Tungwe\\TTdot', 3),
+  new ReglaDoble(['g', 'G'], ['o', 'O'], 'x^', '\\Tungwe\\TTrightcurl', 2),
+  new ReglaDoble(['g', 'G'], ['u', 'U'], 'x&', '\\Tungwe\\TTleftcurl', 2),
+
+  new ReglaDoble(['g', 'G'], ['á', 'Á'], 'x~C', '\\Tungwe\\Taara\\TTthreedots', 2),
+  new ReglaTriple(['g', 'G'], ['u','U'], ['é', 'É'], 'x~V', '\\Tungwe\\Taara\\TTacute', 3),
+  new ReglaTriple(['g', 'G'], ['u','U'], ['í', 'Í'], 'x~B', '\\Tungwe\\Taara\\TTdot', 3),
+  new ReglaDoble(['g', 'G'], ['ó', 'Ó'], 'x~N', '\\Tungwe\\Taara\\TTrightcurl', 2),
+  new ReglaDoble(['g', 'G'], ['ú', 'Ú'], 'x~M', '\\Tungwe\\Taara\\TTleftcurl', 2),
+
+
+  new ReglaTriple(['g', 'G'], ['ü','ü'], ['é', 'É'], 'x&~V', '\\Tungwe\\TTleftcurl\\Taara\\TTacute', 3),
+  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['í', 'Í'], 'x&~B', '\\Tungwe\\TTleftcurl\\Taara\\TTdot', 3),
+  new ReglaTriple(['g', 'G'], ['ü','ü'], ['e', 'E'], 'x&~V', '\\Tungwe\\TTleftcurl\\Taara\\TTacute', 3),
+  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['i', 'I'], 'x&~B', '\\Tungwe\\TTleftcurl\\Taara\\TTdot', 3),
+  new ReglaSimple(['g', 'G'], 'x', '\\Tungwe', 1),
+
+  //TODO: voy por aquí
+
+  new ReglaSimple(['z', 'Z'], '3', '\\Tthuule', 1),
+
+  new ReglaDoble(['c', 'C'], ['E', 'e'], '3l', '\\Tthuule\\Tyanta', 2),
+  new ReglaDoble(['c', 'C'], ['I', 'i'], '3`', '\\Tthuule\\Ttelco', 2),
+
+  new ReglaDoble(['c', 'C'], ['É', 'é'], '3l;', '\\Tthuule\\Tyanta\\TTdoubler', 2),
+  new ReglaDoble(['c', 'C'], ['Í', 'í'], '3`;', '\\Tthuule\\Ttelco\\TTdoubler', 2),
+
+  new ReglaSimple(['f', 'F'], 'e', '\\Tformen', 1),
+  new ReglaSimple(['j', 'J'], 'c', '\\Thwesta', 1),
+
+  new ReglaDoble(['G', 'g'], ['E', 'e'], 'cl', '\\Thwesta\\Tyanta', 2),
+  new ReglaDoble(['G', 'g'], ['I', 'i'], 'c`', '\\Thwesta\\Ttelco', 2),
+  new ReglaDoble(['G', 'g'], ['É', 'é'], 'cl;', '\\Thwesta\\Tyanta\\TTdoubler', 2),
+  new ReglaDoble(['G', 'g'], ['Í', 'í'], 'c`;', '\\Thwesta\\Ttelco\\TTdoubler', 2),
+
+  new ReglaDoble(['L', 'l'], ['L', 'l'], 'f', '\\Tanca', 2),
+
+  new ReglaYConsonante(),
+  new ReglaYVocal(),
+
+  new ReglaSimple(['n', 'N'], '5', '\\Tnuumen', 1),
+  new ReglaSimple(['m', 'M'], 't', '\\Tmalta', 1),
+  new ReglaSimple(['ñ', 'Ñ'], 'g', '\\Tnoldo', 1),
+
+  new ReglaSimple(['IOF'], '', '', 1),
+
+  new ReglaRInicio(),
+  new ReglaDoble(['R', 'r'], ['R', 'r'], '7', '\\TRoomen', 2),
+  new ReglaSimple(['R', 'r'], '6', '\\Toore', 1),
+
+  new ReglaSimple(['L', 'l'], 'j', '\\Tlambe', 1),
+
+  new ReglaSimple(['S', 's'], '8', '\\Tsilme', 1),
+
+  new ReglaSimple(['H', 'h'], '', '', 1),
+
+  new ReglaSimple(['X', 'x'], 'z|', '\\Tquesse\\Tlefthook', 1),
+
+  new ReglaSimple(['A','a'],'n','\\Tvilya', 1),
+  new ReglaSimple(['E','e'],'l','\\Tyanta', 1),
+  new ReglaSimple(['I','i'],'`','\\Ttelco', 1),
+  new ReglaSimple(['O','o'],'h','\\Tanna', 1),
+  new ReglaSimple(['U','u'],'y','\\Tvala', 1),
+
+  new ReglaSimple(['Á','á'],'n;','\\Tvilya\\TTdoubler', 1),
+  new ReglaSimple(['É','é'],'l;','\\Tyanta\\TTdoubler', 1),
+  new ReglaSimple(['Í','í'],'`;','\\Ttelco\\TTdoubler', 1),
+  new ReglaSimple(['Ó','ó'],'h;','\\Tanna\\TTdoubler', 1),
+  new ReglaSimple(['Ú','ú'],'y;','\\Tvala\\TTdoubler', 1),
+
+  new ReglaSimple(['.', ';', ':'],'-','\\Tcolon', 1),
+  new ReglaSimple([','],'=','\\Tcentereddot', 1),
+
+  new ReglaSimple( ["¿", "¡"], '', '', 1),
+  new ReglaSimple( ['?'], 'À', '\\Tquestion', 1),
+  new ReglaSimple( ['!'], 'Á', '\\Texclamation', 1),
+
+  new ReglaSimple(espacios, ' ', ' ', 1),
+
+  new ReglaComillaApertura(),
+  new ReglaComillaCierre()
+];
+
+var reglas;
+
+function AnalizadorSintactico(texto, opciones){
   this.texto = texto;
+
+  if (opciones && opciones.vocales && opciones.vocales === "tehtar") {
+    reglas = reglas_tehtar;
+  } else {
+    reglas = reglas_plenas;
+  }
+
   this.tokens = new AnalizadorLex(texto).analizar();
   this.tokens_consumidos = [];
   this.transformado = [];
@@ -637,10 +773,9 @@ console.log(regla.esValida(tokens));
 var resultado = regla.transformar(tokens);
 resultado
 
-*/
 var prueba = new AnalizadorSintactico('acné');
 prueba.analizar('t');
 console.log(prueba.getAnnatar());
 console.log(prueba.getTengwarscript());
-
+*/
 
