@@ -9,3 +9,13 @@ td {text-align: center;}
 
 .tengwar {font-family: Tengwar Annatar;}
 
+body, ul, p {
+    font-family:  Lato, Helvetica, Arial, sans-serif;
+    font-size:  18px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #111;
+    background-color: #fdfdfd;
+    -webkit-text-size-adjust: 100%;
+}
+
