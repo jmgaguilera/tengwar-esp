@@ -41,6 +41,10 @@
       <form id="form_config" class="form-horizontal">
         <label class="radio-inline"><input name="input-vocales" type="radio" value="">vocales tehtar</label>
         <label class="radio-inline"><input name="input-vocales" type="radio" value="">vocales plenas</label>
+        <br/>
+        <label class="radio-inline"><input name="input-annatar" type="radio" value="">fuente annatar</label>
+        <label class="radio-inline"><input name="input-annatar" type="radio" value="">fuente annatar itálica</label>
+        <br/>
       </form>
     </div>
     </div>
@@ -67,7 +71,7 @@
       <div class="panel-heading">
         Resultado en tengwar:
       </div>
-      <div id="traduccion" class="panel-body tengwar text-center h2">
+      <div id="traduccion" class="panel-body text-center h2">
 
       </div>
     </div>
@@ -87,7 +91,10 @@
 
       var configuracion = {
         vocales: "tehtar",
+        fuente: "Tengwar Annatar",
       };
+
+      var clase_traduccion = "panel-body text-center h2";
 
         document.getElementById('form_entrada').onsubmit = function() {
             return false;
@@ -116,7 +123,7 @@
           var txt_config = document.getElementById("txt_config");
           var nuevo_txt = "";
           for (i in configuracion) {
-            nuevo_txt += i+": "+configuracion[i]+"; ";
+            nuevo_txt += "<b>"+i+"</b>: "+configuracion[i]+"; ";
           }
           txt_config.innerHTML = nuevo_txt;
         }
@@ -145,6 +152,36 @@
             configuracion.vocales = "plenas";
             radio[1].checked = true;
           }
+
+
+          radio = document.getElementsByName("input-annatar");
+
+          for (i=0; i<radio.length; i++) {
+            (function(indice) {
+              radio[i].onclick = function() {
+                if (indice === 0) {
+                  configuracion.fuente = "Tengwar Annatar";
+                } else {
+                  configuracion.fuente = "Tengwar Annatar Italic";
+                }
+                if (configuracion.fuente === "Tengwar Annatar") {
+                  document.getElementById("traduccion").className = clase_traduccion + " tengwar";
+                }else{
+                  document.getElementById("traduccion").className = clase_traduccion + " tengwar-it";
+                }
+                describir_configuracion();
+              }
+            }(i));
+          }
+
+          if (configuracion.fuente === "Tengwar Annatar") {
+            document.getElementById("traduccion").className = clase_traduccion + " tengwar";
+            radio[0].checked = true;
+          }else{
+            document.getElementById("traduccion").className = clase_traduccion + " tengwar-it";
+            radio[1].checked = true;
+          }
+
         }
 
         window.onload = function() {

@@ -6,6 +6,13 @@ td {text-align: center;}
 
 }
 
+@font-face {
+  font-family: Tengwar-Italic;
+  src: local("Tengwar Annatar, Italic"), url(font/tngani.ttf) format("opentype");
+
+}
+
+
 /* implement both fixed-size and relative sizes */
 SMALL.XTINY		{ font-size : xx-small }
 SMALL.TINY		{ font-size : x-small  }
@@ -19,6 +26,8 @@ BIG.HUGE		{ font-size : larger   }
 BIG.XHUGE		{ font-size : 300% }
 
 .tengwar {font-family: Tengwar Annatar;}
+
+.tengwar-it {font-family: Tengwar-Italic;}
 
 body, ul, p {
     font-family:  Lato, Helvetica, Arial, sans-serif;
