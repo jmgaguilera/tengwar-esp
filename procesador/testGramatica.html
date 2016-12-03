@@ -2,7 +2,7 @@
 <html>
 
   <head>
-    <link rel="stylesheet" type="text/css" href="testGramatica.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="tengespjs.css" media="screen" />
     <script src="gramatica.js"></script>
   </head>
 
@@ -865,7 +865,7 @@
         <td class="tengwar"></td>
         <td></td>
       </tr>
-          <tr>
+      <tr>
         <td>aeiou</td>
         <td class="tengwar"></td>
         <td></td>
@@ -879,13 +879,20 @@
         <td class="tengwar"></td>
         <td></td>
       </tr>
+                <tr>
+            <td>traductor español tengwar</td>
+        <td class="tengwar"></td>
+        <td></td>
+        <td class="tengwar"></td>
+        <td></td>
+      </tr>
     </table>
 
     <script type="text/javascript">
       'use strict';
       var entrada, texto_entrada, analizador;
       var l, row;
-      for (l = 1; l<test_plena.rows.length; l++) {
+      for (l = 1; l<test_tehtar.rows.length; l++) {
          row = test_tehtar.rows[l];
          texto_entrada = row.cells[0].innerHTML.toString();
          analizador = new AnalizadorSintactico(texto_entrada, { vocales: "tehtar"});
