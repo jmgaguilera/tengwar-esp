@@ -798,7 +798,6 @@ function AnalizadorSintactico(texto, opciones){
 
 AnalizadorSintactico.prototype.analizar = function(tipo_letra) {
   do {
-    console.log(tipo_letra);
     var t = this.analizarSiguiente(tipo_letra);
     this.transformado.push(t);
   } while (this.tokens[0].tipo !== 'EOF');
