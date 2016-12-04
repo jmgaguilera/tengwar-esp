@@ -446,7 +446,8 @@ function ReglaVocal() {
           // En función del carácter tengwar anterior se debe poner la vocal tehtar más o menos desplazada
           if ( ['\\Tando', '\\Tumbar', '\\Tungwe',
                 '\\Tampa', '\\Tanca', '\\Tnuumen',
-                '\\Tmalta', '\\Tnoldo', '\\Tlambe', '\\Talda'
+                '\\Tmalta', '\\Tnoldo', '\\Tlambe', '\\Talda',
+                '\\Tando\\TTnasalizer', '\\Tumbar\\TTnasalizer'
                ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0 ) {
 
             retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][0];
@@ -460,8 +461,7 @@ function ReglaVocal() {
 
             retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][1];
 
-          } else if (['\\Tthuule', '\\Tformen', '\\Tando\\TTnasalizer',
-                      '\\Tumbar\\TTnasalizer'
+          } else if (['\\Tthuule', '\\Tformen'
                      ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0) {
 
             retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][2];
