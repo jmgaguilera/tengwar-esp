@@ -3,7 +3,11 @@ td {text-align: center;}
 @font-face {
   font-family: Tengwar Annatar;
   src: local("Tengwar Annatar"), url(font/tngan.ttf) format("opentype");
+}
 
+@font-face {
+  font-family: Tengwar Annatar Alt;
+  src: local("Tengwar Annatar Alt"), url(font/tngana.ttf) format("opentype");
 }
 
 @font-face {
@@ -11,6 +15,13 @@ td {text-align: center;}
   src: local("Tengwar Annatar, Italic"), url(font/tngani.ttf) format("opentype");
 
 }
+
+@font-face {
+  font-family: Tengwar-Alt-Italic;
+  src: local("Tengwar Annatar Alt, Italic"), url(font/tnganai.ttf) format("opentype");
+
+}
+
 
 
 /* implement both fixed-size and relative sizes */
@@ -26,8 +37,11 @@ BIG.HUGE		{ font-size : larger   }
 BIG.XHUGE		{ font-size : 300% }
 
 .tengwar {font-family: Tengwar Annatar;}
+.tengwar-alt {font-family: Tengwar Annatar Alt;}
 
 .tengwar-it {font-family: Tengwar-Italic;}
+.tengwar-alt-it {font-family: Tengwar-Alt-Italic;}
+
 
 body, ul, p {
     font-family:  Lato, Helvetica, Arial, sans-serif;
