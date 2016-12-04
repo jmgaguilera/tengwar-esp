@@ -436,7 +436,7 @@ function ReglaVocal() {
               tokensConsumidos: null
           };
           if (!(tokens_consumidos.length >= 1 &&
-                tokens_consumidos[tokens_consumidos.length-1].esConsonanteNoMuda())) {
+                tokens_consumidos[tokens_consumidos.length-1].esConsonante())) {
             retorno.codigoTengwarscript += '\\Telco';
             retorno.codigoAnnatar += '`';
           };
@@ -452,12 +452,16 @@ function ReglaVocal() {
             retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][0];
 
           } else if (['\\Ttinco', '\\Tparma','\\Tcalma','\\Tquesse',
-                      '\\Thwesta', '\\Toore', '\\Troomen', '\\Tsilmenuquerna', '\\Tquesse\\Tlefthook'
+                      '\\Thwesta', '\\Toore', '\\Troomen', '\\Tsilmenuquerna',
+                      '\\Tquesse\\Tlefthook', '\\Ttinco\\TTnasalizer',
+                      '\\Tparma\\TTnasalizer', '\\Tcalma\\TTnasalizer',
+                      '\\Tquesse\\TTnasalizer'
                      ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0 ) {
 
             retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][1];
 
-          } else if (['\\Tthuule', '\\Tformen'
+          } else if (['\\Tthuule', '\\Tformen', '\\Tando\\TTnasalizer',
+                      '\\Tumbar\\TTnasalizer'
                      ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0) {
 
             retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][2];
@@ -625,7 +629,7 @@ var reglas_plenas = [
 
   new ReglaSimple(['S', 's'], '8', '\\Tsilme', 1),
 
-  new ReglaSimple(['H', 'h'], '', '', 1),
+  new ReglaSimple(['H', 'h'], '9', '\\Thyarmen', 1),
 
   new ReglaSimple(['X', 'x'], 'z|', '\\Tquesse\\Tlefthook', 1),
 
@@ -754,7 +758,7 @@ var reglas_tehtar = [
   new ReglaDoble(['S', 's'], ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'],
                  'i', '\\Tsilmenuquerna', 1, 2),
 
-  new ReglaSimple(['H', 'h'], '', '', 1),
+  new ReglaSimple(['H', 'h'], '9', '\\Thyarmen', 1),
 
   new ReglaSimple(['X', 'x'], 'z|', '\\Tquesse\\Tlefthook', 1),
 
@@ -779,15 +783,35 @@ var reglas_tehtar = [
   new ReglaComillaCierre()
 ];
 
+
+var reglas_grupo = [
+  new ReglaDoble(['n', 'N'], ['t', 'T'], '1[', '\\Ttinco\\TTnasalizer', 2),
+  new ReglaDoble(['m', 'M'], ['p', 'P'], 'q[', '\\Tparma\\TTnasalizer', 2),
+  new ReglaTriple(['n', 'N'], ['c', 'C'], ['h','H'], 'a[', '\\Tcalma\\TTnasalizer', 3),
+  new ReglaDoble(['n', 'N'],['k','K'], 'z[', '\\Tquesse\\TTnasalizer', 2),
+  new ReglaDoble(['n', 'N'],['d','D'], '2{', '\\Tando\\TTnasalizer', 2),
+  new ReglaDoble(['m', 'M'],['b','B'], 'w{', '\\Tumbar\\TTnasalizer', 2),
+  // Esta es más compleja si hay que distinguir hwesta de ungwe (al finalizar el análisis
+  // basta con sustituir en la traducción "5x" por "x{" y '\\nuumen\\Tungwe' por '\\Tungwe\\TTnasalizer'
+  // ['n', 'N'],['g','G'], 'x{', '\\Tungwe\\TTnasalizer'
+
+];
+
 var reglas;
 
 function AnalizadorSintactico(texto, opciones){
   this.texto = texto;
+  this.opciones = opciones;
 
   if (opciones && opciones.vocales && opciones.vocales === "tehtar") {
     reglas = reglas_tehtar;
   } else {
     reglas = reglas_plenas;
+  }
+
+  if (opciones && opciones.abreviar_nasal_oclusiva &&
+      opciones.abreviar_nasal_oclusiva === "Si") {
+    reglas = reglas.concat(reglas_grupo);
   }
 
   this.tokens = new AnalizadorLex(texto).analizar();
@@ -801,6 +825,7 @@ AnalizadorSintactico.prototype.analizar = function(tipo_letra) {
     var t = this.analizarSiguiente(tipo_letra);
     this.transformado.push(t);
   } while (this.tokens[0].tipo !== 'EOF');
+
   return this.transformado;
 }
 
@@ -839,15 +864,26 @@ AnalizadorSintactico.prototype.analizarSiguiente = function(tipo_letra) {
 }
 
 AnalizadorSintactico.prototype.getAnnatar = function() {
-  return this.transformado.map(
+ var texto = this.transformado.map(
     function(t) {return t.codigoAnnatar;}
   ).join('');
+
+  if (this.opciones.abreviar_nasal_oclusiva === "Si") {
+    texto = texto.replace('5x','x{')
+  }
+
+  return texto;
 }
 
 AnalizadorSintactico.prototype.getTengwarscript = function() {
-  return this.transformado.map(
+  var texto = this.transformado.map(
     function(t) {return t.codigoTengwarscript;}
   ).join('');
+
+  if (this.opciones.abreviar_nasal_oclusiva === "Si") {
+    texto = texto.replace('\\Tnuumen\\Tungwe','\\Tungwe\\TTnasalizer')
+  }
+  return texto;
 
 }
 

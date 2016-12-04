@@ -42,11 +42,14 @@
     <a href="#config" data-toggle="collapse">Cambiar configuración</a>
     <div id="config" class="collapse">
       <form id="form_config" class="form-horizontal">
+        <label class="radio-inline"><input name="input-annatar" type="radio" value="">fuente annatar</label>
+        <label class="radio-inline"><input name="input-annatar" type="radio" value="">fuente annatar itálica</label>
+        <br/>
         <label class="radio-inline"><input name="input-vocales" type="radio" value="">vocales tehtar</label>
         <label class="radio-inline"><input name="input-vocales" type="radio" value="">vocales plenas</label>
         <br/>
-        <label class="radio-inline"><input name="input-annatar" type="radio" value="">fuente annatar</label>
-        <label class="radio-inline"><input name="input-annatar" type="radio" value="">fuente annatar itálica</label>
+        <label class="checkbox-inline"><input name="input-grupos" type="checkbox" value="">abreviar nasal+oclusiva (nt, mp, nch, nk, nd, mb, ng)</label>
+
         <br/>
       </form>
     </div>
@@ -95,6 +98,7 @@
       var configuracion = {
         vocales: "tehtar",
         fuente: "Tengwar Annatar",
+        abreviar_nasal_oclusiva: 'No',
       };
 
       var clase_traduccion = "panel-body text-center h1";
@@ -131,6 +135,17 @@
         }
 
         function iniciar_configuracion() {
+
+          var chk_grupo = document.getElementsByName("input-grupos")[0];
+
+          configuracion.abreviar_nasal_oclusiva = (chk_grupo.checked ? "Si" : "No");
+          chk_grupo.onchange = function() {
+            configuracion.abreviar_nasal_oclusiva = (chk_grupo.checked ? "Si" : "No");
+            calcular.call(txt_entrada);
+            describir_configuracion();
+          }
+
+
           var radio = document.getElementsByName("input-vocales");
 
           for (i=0; i<radio.length; i++) {
