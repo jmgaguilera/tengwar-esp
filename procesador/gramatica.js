@@ -47,6 +47,15 @@ Token.prototype.esApertura = function() {
          this.tipo === "APERTURA_COMILLAS" ;
 }
 
+Token.prototype.esConsonante = function() {
+  return this.tipo === 'CONSONANTE' ||
+         this.tipo === 'Y_GRIEGA' ;
+}
+
+Token.prototype.esConsonanteNoMuda = function() {
+  return (this.tipo === 'CONSONANTE' ||
+         this.tipo === 'Y_GRIEGA') && ['H', 'h'].indexOf(this.texto) < 0 ;
+}
 
 
 
@@ -216,14 +225,14 @@ Regla.prototype.esValida = function(tokens, tokens_consumidos) {
   return this.validador(tokens, tokens_consumidos);
 }
 
-Regla.prototype.transformar = function(tokens, tokens_consumidos) {
-  return this.transformador(tokens, tokens_consumidos); // devuelve un objeto de tres elementos: el código en tengwar annatar, el código en tengwarscript para LaTeX, la lista de tokens restante.
+Regla.prototype.transformar = function(tokens, tokens_consumidos, transformado, tipo_letra) {
+  return this.transformador(tokens, tokens_consumidos, transformado, tipo_letra); // devuelve un objeto de tres elementos: el código en tengwar annatar, el código en tengwarscript para LaTeX, la lista de tokens restante.
 }
 
 
 // validador-transformador simple (mira solamente en el caracter que está en la posición actual).
 function ReglaSimple(caracteres, resultado, tengwarscript, numConsume) {
-  this.consume = numConsume;
+  this.peso = numConsume;
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return (caracteres.indexOf(tokens[0].texto) >= 0);
@@ -251,8 +260,8 @@ ReglaSimple.prototype = Object.create(Regla.prototype);
 
 
 // validador-transformador doble (mira en el caracter que está en la posición actual y en la siguiente).
-function ReglaDoble(caracteres1, caracteres2, resultado, tengwarscript, numConsume) {
-  this.consume = numConsume;
+function ReglaDoble(caracteres1, caracteres2, resultado, tengwarscript, numConsume, peso) {
+  this.peso = peso || numConsume; // el peso lo hemos llamado consume
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 2 &&
@@ -283,7 +292,7 @@ ReglaDoble.prototype = Object.create(Regla.prototype);
 
 // validador-transformador triple (mira en el caracter que está en la posición actual y en las dos siguientes).
 function ReglaTriple(caracteres1, caracteres2, caracteres3, resultado, tengwarscript, numConsume) {
-  this.consume = numConsume;
+  this.peso = numConsume;
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 3 &&
@@ -314,7 +323,7 @@ ReglaTriple.prototype = Object.create(Regla.prototype);
 
 // validador-transformador y consonántica
 function ReglaYConsonante() {
-  this.consume = 1;
+  this.peso = 1;
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 2 &&
@@ -337,22 +346,31 @@ function ReglaYConsonante() {
 ReglaYConsonante.prototype = Object.create(Regla.prototype);
 
 // validador-transformador y vocálica
-function ReglaYVocal() {
-  this.consume = 1;
+function ReglaYVocal(param) {
+  this.peso = 1;
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 2 &&
                  (['Y', 'y'].indexOf(tokens[0].texto) >= 0) &&
                  !tokens[1].esVocal() ;
         },
-        function(tokens, tokens_consumidos) {
+        function(tokens, tokens_consumidos, transformado, tipo_letra) {
           tokens_consumidos.push(tokens[0]);
           tokens.shift();
-          return {
-              codigoAnnatar: '~',
-              codigoTengwarscript: '\\Taara',
-              tokensRestantes: tokens,
-              tokensConsumidos: tokens_consumidos
+          if (param === "tehtar") {
+            return {
+                codigoAnnatar: '`<span class="'+tipo_letra+'">Û</span>',
+                codigoTengwarscript: '\\Ttelco\\TTbreve',
+                tokensRestantes: tokens,
+                tokensConsumidos: tokens_consumidos
+            }
+          } else {
+            return {
+                codigoAnnatar: '~',
+                codigoTengwarscript: '\\Taara',
+                tokensRestantes: tokens,
+                tokensConsumidos: tokens_consumidos
+            }
           }
         }
   );
@@ -362,7 +380,7 @@ ReglaYVocal.prototype = Object.create(Regla.prototype);
 
 // validador-transformador R de inicio de palabra
 function ReglaRInicio() {
-  this.consume = 2; // En realidad consume uno pero tiene que tener más peso ya que mira en el anterior (como si fuesen dos)
+  this.peso = 2; // En realidad consume uno pero tiene que tener más peso ya que mira en el anterior (como si fuesen dos)
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 1 && tokens_consumidos.length >= 1 &&
@@ -386,9 +404,89 @@ function ReglaRInicio() {
 
 ReglaRInicio.prototype = Object.create(Regla.prototype);
 
+
+// validador-transformador de vocales tehtar
+
+var vocal_a_tengwar_tehtar = {
+  'A' : ['#','E','D','C','\\TTthreedots'],
+  'a' : ['#','E','D','C','\\TTthreedots'],
+  'E' : ['$','R','F','V','\\TTacute'],
+  'e' : ['$','R','F','V','\\TTacute'],
+  'I' : ['%','T','G','B','\\TTdot'],
+  'i' : ['%','T','G','B','\\TTdot'],
+  'O' : ['^','Y','H','N','\\TTrightcurl'],
+  'o' : ['^','Y','H','N','\\TTrightcurl'],
+  'U' : ['&','U','J','M','\\TTleftcurl'],
+  'u' : ['&','U','J','M','\\TTleftcurl']
+};
+
+
+function ReglaVocal() {
+  this.peso = 2; // En realidad consume uno pero tiene que tener más peso ya que mira en el anterior (como si fuesen dos)
+  Regla.call(this,
+        function(tokens, tokens_consumidos) {
+          return tokens.length >= 1 &&
+                 (['A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u'].indexOf(tokens[0].texto) >= 0);
+        },
+        function(tokens, tokens_consumidos, transformado) {
+          var retorno = {
+              codigoAnnatar: '',
+              codigoTengwarscript: '',
+              tokensRestantes: null,
+              tokensConsumidos: null
+          };
+          if (!(tokens_consumidos.length >= 1 &&
+                tokens_consumidos[tokens_consumidos.length-1].esConsonanteNoMuda())) {
+            retorno.codigoTengwarscript += '\\Telco';
+            retorno.codigoAnnatar += '`';
+          };
+
+          retorno.codigoTengwarscript += vocal_a_tengwar_tehtar[tokens[0].texto][4];
+
+          // En función del carácter tengwar anterior se debe poner la vocal tehtar más o menos desplazada
+          if ( ['\\Tando', '\\Tumbar', '\\Tungwe',
+                '\\Tampa', '\\Tanca', '\\Tnuumen',
+                '\\Tmalta', '\\Tnoldo', '\\Tlambe', '\\Talda'
+               ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0 ) {
+
+            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][0];
+
+          } else if (['\\Ttinco', '\\Tparma','\\Tcalma','\\Tquesse',
+                      '\\Thwesta', '\\Toore', '\\Troomen', '\\Tsilmenuquerna', '\\Tquesse\\Tlefthook'
+                     ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0 ) {
+
+            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][1];
+
+          } else if (['\\Tthuule', '\\Tformen'
+                     ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0) {
+
+            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][2];
+
+          } else {
+
+            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][3];
+
+          };
+
+          tokens_consumidos.push(tokens[0]);
+          tokens.shift(); // consume uno
+
+
+          retorno.tokensRestantes = tokens;
+          retorno.tokensConsumidos = tokens_consumidos;
+
+
+          return retorno;
+        }
+  );
+}
+
+ReglaVocal.prototype = Object.create(Regla.prototype);
+
+
 // validador-transformador apertura de comillas
 function ReglaComillaApertura() {
-  this.consume = 1;
+  this.peso = 1;
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 1 &&
@@ -412,7 +510,7 @@ ReglaComillaApertura.prototype = Object.create(Regla.prototype);
 
 // validador-transformador cierre de comillas
 function ReglaComillaCierre() {
-  this.consume = 1;
+  this.peso = 1;
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 1 &&
@@ -616,28 +714,28 @@ var reglas_tehtar = [
   new ReglaTriple(['g', 'G'], ['ü','Ü'], ['i', 'I'], 'x&~B', '\\Tungwe\\TTleftcurl\\Taara\\TTdot', 3),
   new ReglaSimple(['g', 'G'], 'x', '\\Tungwe', 1),
 
-  //TODO: voy por aquí
 
   new ReglaSimple(['z', 'Z'], '3', '\\Tthuule', 1),
 
-  new ReglaDoble(['c', 'C'], ['E', 'e'], '3l', '\\Tthuule\\Tyanta', 2),
-  new ReglaDoble(['c', 'C'], ['I', 'i'], '3`', '\\Tthuule\\Ttelco', 2),
 
-  new ReglaDoble(['c', 'C'], ['É', 'é'], '3l;', '\\Tthuule\\Tyanta\\TTdoubler', 2),
-  new ReglaDoble(['c', 'C'], ['Í', 'í'], '3`;', '\\Tthuule\\Ttelco\\TTdoubler', 2),
+  new ReglaDoble(['c', 'C'], ['E', 'e'], '3F', '\\Tthuule\\TTacute', 2),
+  new ReglaDoble(['c', 'C'], ['I', 'i'], '3G', '\\Tthuule\\TTdot', 2),
+
+  new ReglaDoble(['c', 'C'], ['É', 'é'], '3~V;', '\\Tthuule\\Taara\\TTacute', 2),
+  new ReglaDoble(['c', 'C'], ['Í', 'í'], '3~B;', '\\Tthuule\\Taara\\TTdot', 2),
 
   new ReglaSimple(['f', 'F'], 'e', '\\Tformen', 1),
   new ReglaSimple(['j', 'J'], 'c', '\\Thwesta', 1),
 
-  new ReglaDoble(['G', 'g'], ['E', 'e'], 'cl', '\\Thwesta\\Tyanta', 2),
-  new ReglaDoble(['G', 'g'], ['I', 'i'], 'c`', '\\Thwesta\\Ttelco', 2),
-  new ReglaDoble(['G', 'g'], ['É', 'é'], 'cl;', '\\Thwesta\\Tyanta\\TTdoubler', 2),
-  new ReglaDoble(['G', 'g'], ['Í', 'í'], 'c`;', '\\Thwesta\\Ttelco\\TTdoubler', 2),
+  new ReglaDoble(['G', 'g'], ['E', 'e'], 'cR', '\\Thwesta\\TTacute', 2),
+  new ReglaDoble(['G', 'g'], ['I', 'i'], 'cT', '\\Thwesta\\TTdot', 2),
+  new ReglaDoble(['G', 'g'], ['É', 'é'], 'c~V', '\\Thwesta\\Taara\\TTacute', 2),
+  new ReglaDoble(['G', 'g'], ['Í', 'í'], 'c~B', '\\Thwesta\\Taara\\TTdot', 2),
 
   new ReglaDoble(['L', 'l'], ['L', 'l'], 'f', '\\Tanca', 2),
 
   new ReglaYConsonante(),
-  new ReglaYVocal(),
+  new ReglaYVocal('tehtar'),
 
   new ReglaSimple(['n', 'N'], '5', '\\Tnuumen', 1),
   new ReglaSimple(['m', 'M'], 't', '\\Tmalta', 1),
@@ -652,22 +750,21 @@ var reglas_tehtar = [
   new ReglaSimple(['L', 'l'], 'j', '\\Tlambe', 1),
 
   new ReglaSimple(['S', 's'], '8', '\\Tsilme', 1),
+  // Si viene un acento se usa la silmenuquerna, aunque no consumo la vocal
+  new ReglaDoble(['S', 's'], ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'],
+                 'i', '\\Tsilmenuquerna', 1, 2),
 
   new ReglaSimple(['H', 'h'], '', '', 1),
 
   new ReglaSimple(['X', 'x'], 'z|', '\\Tquesse\\Tlefthook', 1),
 
-  new ReglaSimple(['A','a'],'n','\\Tvilya', 1),
-  new ReglaSimple(['E','e'],'l','\\Tyanta', 1),
-  new ReglaSimple(['I','i'],'`','\\Ttelco', 1),
-  new ReglaSimple(['O','o'],'h','\\Tanna', 1),
-  new ReglaSimple(['U','u'],'y','\\Tvala', 1),
+  new ReglaVocal(), // el símbolo de la vocal varía si tiene o no consonante delante, y la posición también varía en función del ancho de la consonante
 
-  new ReglaSimple(['Á','á'],'n;','\\Tvilya\\TTdoubler', 1),
-  new ReglaSimple(['É','é'],'l;','\\Tyanta\\TTdoubler', 1),
-  new ReglaSimple(['Í','í'],'`;','\\Ttelco\\TTdoubler', 1),
-  new ReglaSimple(['Ó','ó'],'h;','\\Tanna\\TTdoubler', 1),
-  new ReglaSimple(['Ú','ú'],'y;','\\Tvala\\TTdoubler', 1),
+  new ReglaSimple(['Á','á'],'~C','\\Taara\\TTthreedots', 1),
+  new ReglaSimple(['É','é'],'~V','\\Taara\\TTacute', 1),
+  new ReglaSimple(['Í','í'],'~B','\\Taara\\TTdot', 1),
+  new ReglaSimple(['Ó','ó'],'~N','\\Taara\TTrightcurl', 1),
+  new ReglaSimple(['Ú','ú'],'~M','\\Taara\\TTleftcurl', 1),
 
   new ReglaSimple(['.', ';', ':'],'-','\\Tcolon', 1),
   new ReglaSimple([','],'=','\\Tcentereddot', 1),
@@ -699,15 +796,16 @@ function AnalizadorSintactico(texto, opciones){
 
 }
 
-AnalizadorSintactico.prototype.analizar = function() {
+AnalizadorSintactico.prototype.analizar = function(tipo_letra) {
   do {
-    var t = this.analizarSiguiente();
+    console.log(tipo_letra);
+    var t = this.analizarSiguiente(tipo_letra);
     this.transformado.push(t);
   } while (this.tokens[0].tipo !== 'EOF');
   return this.transformado;
 }
 
-AnalizadorSintactico.prototype.analizarSiguiente = function() {
+AnalizadorSintactico.prototype.analizarSiguiente = function(tipo_letra) {
   var t_c = this.tokens_consumidos;
   var t = this.tokens;
   var reglas_validas = reglas.filter(
@@ -716,25 +814,25 @@ AnalizadorSintactico.prototype.analizarSiguiente = function() {
     }
   );
   if (reglas_validas.length === 1) {
-    return reglas_validas[0].transformar(t, t_c);
+    return reglas_validas[0].transformar(t, t_c, this.transformado, tipo_letra);
   } else if (reglas_validas.length > 1) {
 
     var ind_regla = -1; // Indice de la regla a aplicar
     var num_regla = 0; // Número de reglas de la misma prioridad a la regla a aplicar (no debe haber más de una)
-    var consume_regla = -1;
+    var peso_regla = -1;
     for (var i = 0; i< reglas_validas.length; i++) {
-      if (consume_regla < reglas_validas[i].consume) {
+      if (peso_regla < reglas_validas[i].peso) {
         num_regla = 1;
         ind_regla = i;
-        consume_regla = reglas_validas[i].consume;
-      } else if (consume_regla === reglas_validas[i].consume) {
+        peso_regla = reglas_validas[i].peso;
+      } else if (peso_regla === reglas_validas[i].peso) {
         num_regla += 1;
       }
     }
     if (num_regla > 1) {
       throw new Error("La entrada es ambigua (varias reglas posibles). Tokens restantes: " + t.toString());
     } else {
-      return reglas_validas[ind_regla].transformar(t, t_c);
+      return reglas_validas[ind_regla].transformar(t, t_c, null, tipo_letra);
     }
   } else {
     throw new Error("No se puede reconocer esta sentencia. Tokens restantes: " + t.toString());

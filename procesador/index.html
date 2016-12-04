@@ -21,9 +21,12 @@
   </head>
 
   <body>
-    <h2 class="text-center">
-      Traductor de español a tengwar
-    </h2>
+    <h1 class="text-center tengwar-it">
+      16E2&z1Y6 2$ `V8qEg^j `C 1R5xw#6
+    </h1>
+    <h3 class="text-center">
+      (traductor de español a tengwar)
+    </h3>
 
     <div class="container">
 
@@ -71,7 +74,7 @@
       <div class="panel-heading">
         Resultado en tengwar:
       </div>
-      <div id="traduccion" class="panel-body text-center h2">
+      <div id="traduccion" class="panel-body text-center h1">
 
       </div>
     </div>
@@ -94,7 +97,7 @@
         fuente: "Tengwar Annatar",
       };
 
-      var clase_traduccion = "panel-body text-center h2";
+      var clase_traduccion = "panel-body text-center h1";
 
         document.getElementById('form_entrada').onsubmit = function() {
             return false;
@@ -103,10 +106,9 @@
 
        function calcular() {
             var texto = this.value;
-            console.log(texto);
             var analizador = new AnalizadorSintactico(texto, configuracion);
              try {
-               analizador.analizar();
+               analizador.analizar(configuracion.fuente==="Tengwar Annatar" ? "tengwar-alt" : "tengwar-alt-it");
                traduccion.innerHTML = analizador.getAnnatar();
                traduccion_latex.innerHTML = analizador.getTengwarscript();
              } catch (e) {
