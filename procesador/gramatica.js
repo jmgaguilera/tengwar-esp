@@ -797,6 +797,12 @@ var reglas_grupo = [
 
 ];
 
+var separadores_palabra = espacios.concat(puntos).concat(['!', '?', '"', "'", 'EOF']);
+var reglas_s = [
+  new ReglaDoble(['s', 'S'], separadores_palabra,
+                '_', '\\Trighthook', 1, 2),
+];
+
 var reglas;
 
 function AnalizadorSintactico(texto, opciones){
@@ -808,10 +814,18 @@ function AnalizadorSintactico(texto, opciones){
   } else {
     reglas = reglas_plenas;
   }
-
+/*
   if (opciones && opciones.abreviar_nasal_oclusiva &&
       opciones.abreviar_nasal_oclusiva === "Si") {
     reglas = reglas.concat(reglas_grupo);
+  }
+*/
+
+  if (opciones && opciones.abreviar_s_final &&
+      opciones.abreviar_s_final === "Si") {
+    console.log(reglas_s);
+    reglas = reglas.concat(reglas_s);
+    console.log(reglas_s);
   }
 
   this.tokens = new AnalizadorLex(texto).analizar();

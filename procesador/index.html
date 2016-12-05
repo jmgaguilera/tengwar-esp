@@ -49,6 +49,7 @@
         <label class="radio-inline"><input name="input-vocales" type="radio" value="">vocales plenas</label>
         <br/>
         <label class="checkbox-inline"><input name="input-grupos" type="checkbox" value="">abreviar nasal+oclusiva (nt, mp, nch, nk, nd, mb, ng)</label>
+        <label class="checkbox-inline"><input name="input-s" type="checkbox" value="">abreviar 's' final de palabra</label>
 
         <br/>
       </form>
@@ -99,6 +100,7 @@
         vocales: "tehtar",
         fuente: "Tengwar Annatar",
         abreviar_nasal_oclusiva: 'No',
+        abreviar_s_final: 'No'
       };
 
       var clase_traduccion = "panel-body text-center h1";
@@ -116,8 +118,8 @@
                traduccion.innerHTML = analizador.getAnnatar();
                traduccion_latex.innerHTML = analizador.getTengwarscript();
              } catch (e) {
-               traduccion.innerHTML = e.toString();
-               traduccion_latex.innerHTML = "";
+               traduccion.innerHTML = "";
+               traduccion_latex.innerHTML = e.toString();
              }
 
         }
@@ -135,6 +137,14 @@
         }
 
         function iniciar_configuracion() {
+
+          var chk_s = document.getElementsByName('input-s')[0];
+          configuracion.abreviar_s_final = (chk_s.checked ? 'Si' : 'No');
+          chk_s.onchange = function() {
+            configuracion.abreviar_s_final = (chk_s.checked ? 'Si' : 'No');
+            calcular.call(txt_entrada);
+            describir_configuracion();
+          }
 
           var chk_grupo = document.getElementsByName("input-grupos")[0];
 
