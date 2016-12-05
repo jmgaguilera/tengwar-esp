@@ -814,12 +814,12 @@ function AnalizadorSintactico(texto, opciones){
   } else {
     reglas = reglas_plenas;
   }
-/*
+
   if (opciones && opciones.abreviar_nasal_oclusiva &&
       opciones.abreviar_nasal_oclusiva === "Si") {
     reglas = reglas.concat(reglas_grupo);
   }
-*/
+
 
   if (opciones && opciones.abreviar_s_final &&
       opciones.abreviar_s_final === "Si") {
