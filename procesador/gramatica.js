@@ -213,6 +213,94 @@ AnalizadorLex.prototype.obtenerToken = function(c) {
 }
 
 
+
+// Tabla auxiliar para códigos de vocales
+
+var vocal_a_tengwar_tehtar = {
+  'A' : ['#','E','D','C','\\TTthreedots'],
+  'a' : ['#','E','D','C','\\TTthreedots'],
+  'E' : ['$','R','F','V','\\TTacute'],
+  'e' : ['$','R','F','V','\\TTacute'],
+  'I' : ['%','T','G','B','\\TTdot'],
+  'i' : ['%','T','G','B','\\TTdot'],
+  'O' : ['^','Y','H','N','\\TTrightcurl'],
+  'o' : ['^','Y','H','N','\\TTrightcurl'],
+  'U' : ['&','U','J','M','\\TTleftcurl'],
+  'u' : ['&','U','J','M','\\TTleftcurl']
+};
+
+vocal_a_tengwar_tehtar.get_codigo = function(cod_tengwar, vocal) {
+  // En función del carácter tengwar anterior se debe poner la vocal tehtar más o menos desplazada
+  if ( ['\\Tando', '\\Tumbar', '\\Tungwe',
+        '\\Tampa', '\\Tanca', '\\Tnuumen',
+        '\\Tmalta', '\\Tnoldo', '\\Tlambe', '\\Talda',
+        '\\Tando\\TTnasalizer', '\\Tumbar\\TTnasalizer'
+       ].indexOf(cod_tengwar) >= 0 ) {
+
+    return vocal_a_tengwar_tehtar[vocal][0];
+
+  } else if (['\\Ttinco', '\\Tparma','\\Tcalma','\\Tquesse',
+              '\\Thwesta', , '\\Troomen', '\\Tsilmenuquerna',
+              '\\Tquesse\\Tlefthook', '\\Ttinco\\TTnasalizer',
+              '\\Tparma\\TTnasalizer', '\\Tcalma\\TTnasalizer',
+              '\\Tquesse\\TTnasalizer', '\\Tyanta', '\\Tvilya',  ' \\Tanna', '\\Tvala'
+             ].indexOf(cod_tengwar) >= 0 ) {
+
+    return vocal_a_tengwar_tehtar[vocal][1];
+
+  } else if (['\\Tthuule', '\\Tformen', '\\Toore', '\\Ttelco',
+             ].indexOf(cod_tengwar) >= 0) {
+
+    return vocal_a_tengwar_tehtar[vocal][2];
+
+  } else {
+
+    return vocal_a_tengwar_tehtar[vocal][3];
+
+  };
+};
+
+
+// Tabla auxiliar para diptongos
+
+var acentos_diptongos = {
+  '\\TTtwodotsbelow' : ['Ì','Ì','Î','Ï'],
+  '\\TTtwodots' : ['Ô','Õ','Ö','×'],
+  '\\TTtilde' : ['è','é','ê','ë'],
+};
+
+acentos_diptongos.get_codigo = function(cod_tengwar, acento) {
+  // En función del carácter tengwar anterior se debe poner la vocal tehtar más o menos desplazada
+  if ( ['\\Tando', '\\Tumbar', '\\Tungwe',
+        '\\Tampa', '\\Tanca', '\\Tnuumen',
+        '\\Tmalta', '\\Tnoldo', '\\Tlambe', '\\Talda',
+        '\\Tando\\TTnasalizer', '\\Tumbar\\TTnasalizer',
+       ].indexOf(cod_tengwar) >= 0 ) {
+
+    return acentos_diptongos[acento][0];
+
+  } else if (['\\Ttinco', '\\Tparma','\\Tcalma','\\Tquesse',
+               '\\Toore', '\\Troomen', '\\Tsilmenuquerna',
+              '\\Tquesse\\Tlefthook', '\\Ttinco\\TTnasalizer',
+              '\\Tparma\\TTnasalizer', '\\Tcalma\\TTnasalizer',
+              '\\Tquesse\\TTnasalizer', '\\Tyanta', '\\Tvilya',  ' \\Tanna', '\\Tvala'
+             ].indexOf(cod_tengwar) >= 0 ) {
+
+    return acentos_diptongos[acento][1];
+
+  } else if (['\\Tthuule', '\\Tformen', '\\Thwesta',
+             ].indexOf(cod_tengwar) >= 0) {
+
+    return acentos_diptongos[acento][2];
+
+  } else {
+
+    return acentos_diptongos[acento][3];
+
+  };
+};
+
+
 // Analizador sintáctico
 
 // Una regla tiene dos partes, una que indica si es válida o no, y otra que realiza la transformación
@@ -404,21 +492,163 @@ function ReglaRInicio() {
 
 ReglaRInicio.prototype = Object.create(Regla.prototype);
 
+// validador-transformador de diptongos crecientes
+function ReglaDiptCreciente(vocales) {
+  this.tehtar = (vocales && vocales === 'tehtar');
+  this.peso = 3; // En realidad consume uno o dos pero tiene más peso ya que mira en tres sitios (la anterior, current y posterior)
+  Regla.call(this,
+        function(tokens, tokens_consumidos) {
+          return tokens.length >= 2 &&
+                 (['I', 'i', 'u', 'U'].indexOf(tokens[0].texto) >= 0) &&
+                  tokens[1].esVocal();
+        },
+        function(tokens, tokens_consumidos, transformado) {
+          var cod_tengwarscript;
+          var cod_annatar;
+          var consumir_dos = true;
+
+          if (tokens_consumidos[tokens_consumidos.length-1].esConsonante()) {
+
+            cod_annatar = vocal_a_tengwar_tehtar.get_codigo(
+                transformado[transformado.length-1].codigoTengwarscript,
+                tokens[1].texto);
+
+            if (this.tehtar) {
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtwodotsbelow')+cod_annatar;
+                  cod_tengwarscript = '\\TTtwodotsbelow'+vocal_a_tengwar_tehtar[tokens[1].texto][4];
+              } else { // letra 'u'
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtilde')+cod_annatar;
+                  cod_tengwarscript = '\\TTtilde'+vocal_a_tengwar_tehtar[tokens[1].texto][4];;
+              }
+            } else {
+                consumir_dos = false;
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtwodots');
+                  cod_tengwarscript = '\TTtwodots';
+              } else { // letra 'u'
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtilde');
+                  cod_tengwarscript = '\\TTtilde';
+              }
+            }
+          } else {
+            if (this.tehtar) {
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = 'h'+vocal_a_tengwar_tehtar[tokens[1].texto][1];;
+                  cod_tengwarscript = '\\Tanna'+vocal_a_tengwar_tehtar[tokens[1].texto][4];;
+              } else { // letra 'u'
+                  cod_annatar = 'y'+vocal_a_tengwar_tehtar[tokens[1].texto][1];;
+                  cod_tengwarscript = '\\Tvala'+vocal_a_tengwar_tehtar[tokens[1].texto][4];;
+              }
+            } else {
+              consumir_dos = false;
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = '~';
+                  cod_tengwarscript = '\\Taara';
+              } else { // letra 'u'
+                  cod_annatar = '.';
+                  cod_tengwarscript = '\\Tuure';
+              }
+            }
+          }
+
+          tokens_consumidos.push(tokens[0]);
+          tokens.shift();
+          if (consumir_dos) {
+            tokens_consumidos.push(tokens[0]);
+            tokens.shift(); // consume dos
+          }
+          return {
+              codigoAnnatar: cod_annatar,
+              codigoTengwarscript: cod_tengwarscript,
+              tokensRestantes: tokens,
+              tokensConsumidos: tokens_consumidos
+          }
+        }
+  );
+}
+
+ReglaDiptCreciente.prototype = Object.create(Regla.prototype);
+
+
+// validador-transformador de diptongos decrecientes
+function ReglaDiptDecreciente(vocales) {
+  this.tehtar = (vocales && vocales === 'tehtar');
+  this.peso = 3; // En realidad consume uno pero tiene más peso ya que mira en tres sitios (la anterior, current y posterior)
+  Regla.call(this,
+        function(tokens, tokens_consumidos) {
+          return tokens.length >= 3 &&
+                 tokens[0].esVocal() &&
+                ((['I', 'i', 'u', 'U'].indexOf(tokens[1].texto) >= 0) ||
+                 ((['Y','y'].indexOf(tokens[1].texto) >= 0) && !tokens[2].esVocal())); // posible y griega vocálica
+        },
+        function(tokens, tokens_consumidos, transformado) {
+          var cod_tengwarscript;
+          var cod_annatar;
+
+          if (this.tehtar) {
+            if (['I','i','Y','y'].indexOf(tokens[1].texto) >= 1) {
+              cod_annatar = 'l'+vocal_a_tengwar_tehtar.get_codigo('\\Tyanta', tokens[0].texto);
+              cod_tengwarscript = '\\Tyanta'+vocal_a_tengwar_tehtar[tokens[0].texto][4];
+            } else {  // letra U
+              cod_annatar = '.'+vocal_a_tengwar_tehtar.get_codigo('\\Toore', tokens[0].texto);
+              cod_tengwarscript = '\\Toore'+vocal_a_tengwar_tehtar[tokens[0].texto][4];
+            }
+
+          } else {
+
+             if (['A','a'].indexOf(tokens[0].texto) >= 0) {
+                 cod_annatar = 'n';
+                 cod_tengwarscript = '\\Tvilya';
+             } else if (['E','e'].indexOf(tokens[0].texto) >= 0) {
+                 cod_annatar = 'l';
+                 cod_tengwarscript = '\\Tyanta';
+             } else if (['i','I'].indexOf(tokens[0].texto) >= 0) {
+                 cod_annatar = '`';
+                 cod_tengwarscript = '\\Ttelco';
+             } else if (['O','o'].indexOf(tokens[0].texto) >= 0) {
+                 cod_annatar = 'h';
+                 cod_tengwarscript = '\\Tanna';
+             } else if (['U','u'].indexOf(tokens[0].texto) >= 0) {
+                 cod_annatar = 'y';
+                 cod_tengwarscript = '\\Tvala';
+             }
+
+             if (['i','I','y','Y'].indexOf(tokens[1].texto) >= 0) {
+               cod_annatar += acentos_diptongos.get_codigo(cod_tengwarscript,'\\TTtwodots');
+               cod_tengwarscript += '\\TTtwodots';
+             } else { // termina en U
+               cod_annatar += acentos_diptongos.get_codigo(cod_tengwarscript,'\\TTtilde');
+               cod_tengwarscript += '\\TTtilde';
+             }
+          }
+
+          tokens_consumidos.push(tokens[0]);
+          tokens.shift();
+          tokens_consumidos.push(tokens[0]);
+          tokens.shift(); // consume dos
+          return {
+              codigoAnnatar: cod_annatar,
+              codigoTengwarscript: cod_tengwarscript,
+              tokensRestantes: tokens,
+              tokensConsumidos: tokens_consumidos
+          }
+        }
+  );
+}
+
+ReglaDiptCreciente.prototype = Object.create(Regla.prototype);
+ReglaDiptDecreciente.prototype = Object.create(Regla.prototype);
 
 // validador-transformador de vocales tehtar
-
-var vocal_a_tengwar_tehtar = {
-  'A' : ['#','E','D','C','\\TTthreedots'],
-  'a' : ['#','E','D','C','\\TTthreedots'],
-  'E' : ['$','R','F','V','\\TTacute'],
-  'e' : ['$','R','F','V','\\TTacute'],
-  'I' : ['%','T','G','B','\\TTdot'],
-  'i' : ['%','T','G','B','\\TTdot'],
-  'O' : ['^','Y','H','N','\\TTrightcurl'],
-  'o' : ['^','Y','H','N','\\TTrightcurl'],
-  'U' : ['&','U','J','M','\\TTleftcurl'],
-  'u' : ['&','U','J','M','\\TTleftcurl']
-};
 
 
 function ReglaVocal() {
@@ -444,33 +674,9 @@ function ReglaVocal() {
           retorno.codigoTengwarscript += vocal_a_tengwar_tehtar[tokens[0].texto][4];
 
           // En función del carácter tengwar anterior se debe poner la vocal tehtar más o menos desplazada
-          if ( ['\\Tando', '\\Tumbar', '\\Tungwe',
-                '\\Tampa', '\\Tanca', '\\Tnuumen',
-                '\\Tmalta', '\\Tnoldo', '\\Tlambe', '\\Talda',
-                '\\Tando\\TTnasalizer', '\\Tumbar\\TTnasalizer'
-               ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0 ) {
-
-            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][0];
-
-          } else if (['\\Ttinco', '\\Tparma','\\Tcalma','\\Tquesse',
-                      '\\Thwesta', '\\Toore', '\\Troomen', '\\Tsilmenuquerna',
-                      '\\Tquesse\\Tlefthook', '\\Ttinco\\TTnasalizer',
-                      '\\Tparma\\TTnasalizer', '\\Tcalma\\TTnasalizer',
-                      '\\Tquesse\\TTnasalizer'
-                     ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0 ) {
-
-            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][1];
-
-          } else if (['\\Tthuule', '\\Tformen'
-                     ].indexOf(transformado[transformado.length-1].codigoTengwarscript) >= 0) {
-
-            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][2];
-
-          } else {
-
-            retorno.codigoAnnatar += vocal_a_tengwar_tehtar[tokens[0].texto][3];
-
-          };
+          retorno.codigoAnnatar += vocal_a_tengwar_tehtar.get_codigo(
+            transformado[transformado.length-1].codigoTengwarscript,
+            tokens[0].texto);
 
           tokens_consumidos.push(tokens[0]);
           tokens.shift(); // consume uno
@@ -803,6 +1009,24 @@ var reglas_s = [
                 '_', '\\Trighthook', 1, 2),
 ];
 
+
+var reglas_dipt_crec_tehtar = [
+    new ReglaDiptCreciente("tehtar"),
+  ];
+
+var reglas_dipt_crec_plenas = [
+    new ReglaDiptCreciente("plenas"),
+  ];
+
+var reglas_dipt_decr_tehtar = [
+    new ReglaDiptDecreciente("tehtar"),
+  ];
+
+var reglas_dipt_decr_plenas = [
+    new ReglaDiptDecreciente("plenas"),
+  ];
+
+
 var reglas;
 
 function AnalizadorSintactico(texto, opciones){
@@ -811,8 +1035,20 @@ function AnalizadorSintactico(texto, opciones){
 
   if (opciones && opciones.vocales && opciones.vocales === "tehtar") {
     reglas = reglas_tehtar;
+    if (opciones.abreviar_dipt_crec && opciones.abreviar_dipt_crec === "Si") {
+      reglas = reglas.concat(reglas_dipt_crec_tehtar);
+    }
+    if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === "Si") {
+      reglas = reglas.concat(reglas_dipt_decr_tehtar);
+    }
   } else {
     reglas = reglas_plenas;
+    if (opciones.abreviar_dipt_crec && opciones.abreviar_dipt_crec === "Si") {
+      reglas = reglas.concat(reglas_dipt_crec_plenas);
+    }
+    if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === "Si") {
+      reglas = reglas.concat(reglas_dipt_decr_plenas);
+    }
   }
 
   if (opciones && opciones.abreviar_nasal_oclusiva &&
@@ -823,10 +1059,9 @@ function AnalizadorSintactico(texto, opciones){
 
   if (opciones && opciones.abreviar_s_final &&
       opciones.abreviar_s_final === "Si") {
-    console.log(reglas_s);
     reglas = reglas.concat(reglas_s);
-    console.log(reglas_s);
   }
+
 
   this.tokens = new AnalizadorLex(texto).analizar();
   this.tokens_consumidos = [];
@@ -870,7 +1105,7 @@ AnalizadorSintactico.prototype.analizarSiguiente = function(tipo_letra) {
     if (num_regla > 1) {
       throw new Error("La entrada es ambigua (varias reglas posibles). Tokens restantes: " + t.toString());
     } else {
-      return reglas_validas[ind_regla].transformar(t, t_c, null, tipo_letra);
+      return reglas_validas[ind_regla].transformar(t, t_c, this.transformado, tipo_letra);
     }
   } else {
     throw new Error("No se puede reconocer esta sentencia. Tokens restantes: " + t.toString());

@@ -50,8 +50,9 @@
         <br/>
         <label class="checkbox-inline"><input name="input-grupos" type="checkbox" value="">abreviar nasal+oclusiva (nt, mp, nch, nk, nd, mb, ng)</label>
         <label class="checkbox-inline"><input name="input-s" type="checkbox" value="">abreviar 's' final de palabra</label>
-
         <br/>
+        <label class="checkbox-inline"><input name="input-dipt-crec" type="checkbox" value=""/>abreviar diptongo creciente</label>
+        <label class="checkbox-inline"><input name="input-dipt-decr" type="checkbox" value=""/>abreviar diptongo decreciente</label>
       </form>
     </div>
     </div>
@@ -100,7 +101,9 @@
         vocales: "tehtar",
         fuente: "Tengwar Annatar",
         abreviar_nasal_oclusiva: 'No',
-        abreviar_s_final: 'No'
+        abreviar_s_final: 'No',
+        abreviar_dipt_crec: 'No',
+        abreviar_dipt_decr: 'No',
       };
 
       var clase_traduccion = "panel-body text-center h1";
@@ -137,6 +140,22 @@
         }
 
         function iniciar_configuracion() {
+
+          var chk_dipt_crec = document.getElementsByName('input-dipt-crec')[0];
+          configuracion.abreviar_dipt_crec = (chk_dipt_crec.checked ? 'Si' : 'No');
+          chk_dipt_crec.onchange = function() {
+            configuracion.abreviar_dipt_crec = (chk_dipt_crec.checked ? 'Si' : 'No');
+            calcular.call(txt_entrada);
+            describir_configuracion();
+          }
+
+          var chk_dipt_decr = document.getElementsByName('input-dipt-decr')[0];
+          configuracion.abreviar_dipt_decr = (chk_dipt_decr.checked ? 'Si' : 'No');
+          chk_dipt_decr.onchange = function() {
+            configuracion.abreviar_dipt_decr = (chk_dipt_decr.checked ? 'Si' : 'No');
+            calcular.call(txt_entrada);
+            describir_configuracion();
+          }
 
           var chk_s = document.getElementsByName('input-s')[0];
           configuracion.abreviar_s_final = (chk_s.checked ? 'Si' : 'No');
