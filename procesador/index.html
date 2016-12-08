@@ -2,7 +2,6 @@
 <html>
 
   <head>
-    <!-- TODO: Quitar estos ficheros y descargarlos -->
   <link rel="stylesheet" href="bootstrap.min.css">
 
   <script src="jquery.min.js"></script>
@@ -20,17 +19,18 @@
       16E2&z1Y6 2$ `V8qEg^j `C 1R5xw#6
     </h1>
     <h3 class="text-center">
-      (traductor de español a tengwar)
+      (traductor de español a <a href="https://es.wikipedia.org/wiki/Tengwar">tengwar</a>)
     </h3>
 
     <div class="container">
-
+    <span>Esta utilidad traduce un texto a tengwar aplicando las reglas gramaticales del modo español 2006.</span>
+        <a role="button" class="btn btn-link" href="http://lambenor.free.fr/tengwar/espanol_2006.html#triptongos">
+          (ver el modo castellano 2006 del Instituto Lingüistico Lambenor)
+        </a>
     <div class="panel panel-primary">
       <div class="panel-heading">
         Configuración
-        <a role="button" class="btn btn-link" style="color:white;" href="http://lambenor.free.fr/tengwar/espanol_2006.html#triptongos">
-          (ver el modo castellano 2006 del Instituto Lingüistico Lambenor)
-        </a>
+
       </div>
       <div id="txt_config" class="panel-body">
 
@@ -166,8 +166,9 @@
 
        function calcular() {
             var texto = this.value;
-            var analizador = new AnalizadorSintactico(texto, configuracion);
+            var analizador;
              try {
+               analizador = new AnalizadorSintactico(texto, configuracion);
                analizador.analizar(configuracion.fuente==='Tengwar Annatar' ? 'tengwar-alt' : 'tengwar-alt-it');
                traduccion.innerHTML = analizador.getAnnatar();
                traduccion_latex.innerHTML = analizador.getTengwarscript();

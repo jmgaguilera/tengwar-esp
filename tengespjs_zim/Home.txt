@@ -16,10 +16,10 @@ Características generales de la aplicación que quiero hacer:
 	* Permitir seleccionar reglas gramaticales opcionales (hasta tenerlas todas).
 	* En el futuro: permitir otros modos ¿?
 
-
-[ ] Crear una librería que convierta de tengwar a tengwarscript (latex). (De aquí a la conversión de símbolos se debe tardar poco)
+(Algunas cosas no las completo, las marco con -x-)
+[*] Crear una librería que convierta de tengwar a tengwarscript (latex). (De aquí a la conversión de símbolos se debe tardar poco)
 	[*] Crear la [[gramática básica]] para las reglas obligatorias de tengwar modo español
-	[ ] Crear unos test de javascript de prueba completa de la gramática. (en curso)
+	[x] Crear unos test de javascript de prueba completa de la gramática. (en curso)
 	[*] Ampliarlo para que convierta en pantalla.
 	[*] Ampliarlo para incorporar varios tipos de letra.
 	[*] Ampliarlo para las diferentes alternativas: letras plenas o diacríticas, reglas opcionales del español.
@@ -30,14 +30,14 @@ Características generales de la aplicación que quiero hacer:
 		[*] triptongos
 		[x] abreviatura de acento gráfico (duplicación)
 		[x] abreviatura de acento gráfico (barra vertical debajo)
-	[ ] Poner enlaces a:
-		[ ] Página de prueba de la librería javascript
+	[*] Poner enlaces a:
+		[x] Página de prueba de la librería javascript
 		[*] Página de tengwar castellano 2006
 		[*] Página de tengwarscript - latex
 		[*] Mi blog
 		[*] Mi artículo sobre tengwar del blog
 		[*] Mi contacto
-[ ] Revisar estilo
+[*] Revisar estilo
 	[*] Evitar las comillas dobles en javascript
 	[*] Evitar las comillas simples en html
 	[x] Revisar las variables privadas para ponerles _ delante
