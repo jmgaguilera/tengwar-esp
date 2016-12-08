@@ -53,6 +53,8 @@
         <br/>
         <label class="checkbox-inline"><input name="input-dipt-crec" type="checkbox" value=""/>abreviar diptongo creciente</label>
         <label class="checkbox-inline"><input name="input-dipt-decr" type="checkbox" value=""/>abreviar diptongo decreciente</label>
+        <br/>
+        <label class="checkbox-inline"><input name="input-triptongo" type="checkbox" value=""/>abreviar triptongo</label>
       </form>
     </div>
     </div>
@@ -104,6 +106,7 @@
         abreviar_s_final: 'No',
         abreviar_dipt_crec: 'No',
         abreviar_dipt_decr: 'No',
+        abreviar_triptongo: 'No',
       };
 
       var clase_traduccion = "panel-body text-center h1";
@@ -140,6 +143,14 @@
         }
 
         function iniciar_configuracion() {
+
+          var chk_triptongo = document.getElementsByName('input-triptongo')[0];
+          configuracion.abreviar_triptongo = (chk_triptongo.checked ? 'Si' : 'No');
+          chk_triptongo.onchange = function() {
+            configuracion.abreviar_triptongo = (chk_triptongo.checked ? 'Si' : 'No');
+            calcular.call(txt_entrada);
+            describir_configuracion();
+          }
 
           var chk_dipt_crec = document.getElementsByName('input-dipt-crec')[0];
           configuracion.abreviar_dipt_crec = (chk_dipt_crec.checked ? 'Si' : 'No');

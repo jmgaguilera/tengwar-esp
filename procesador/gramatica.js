@@ -531,7 +531,7 @@ function ReglaDiptCreciente(vocales) {
                   cod_annatar = acentos_diptongos.get_codigo(
                                   transformado[transformado.length-1].codigoTengwarscript,
                                   '\\TTtwodots');
-                  cod_tengwarscript = '\TTtwodots';
+                  cod_tengwarscript = '\\TTtwodots';
               } else { // letra 'u'
                   cod_annatar = acentos_diptongos.get_codigo(
                                   transformado[transformado.length-1].codigoTengwarscript,
@@ -577,6 +577,8 @@ function ReglaDiptCreciente(vocales) {
 }
 
 ReglaDiptCreciente.prototype = Object.create(Regla.prototype);
+
+
 
 
 // validador-transformador de diptongos decrecientes
@@ -645,8 +647,97 @@ function ReglaDiptDecreciente(vocales) {
   );
 }
 
-ReglaDiptCreciente.prototype = Object.create(Regla.prototype);
+
 ReglaDiptDecreciente.prototype = Object.create(Regla.prototype);
+
+
+// validador-transformador de triptongos
+function ReglaTriptongo(vocales) {
+  this.tehtar = (vocales && vocales === 'tehtar');
+  this.peso = 4; // En realidad consume uno pero tiene más peso ya que mira en cuatro sitios (luego se pasa a aplicar la regla del diptongo)
+  Regla.call(this,
+        function(tokens, tokens_consumidos) {
+          return tokens.length >= 4 &&
+                 (['I', 'i', 'u', 'U'].indexOf(tokens[0].texto) >= 0) &&
+                  tokens[1].esVocal() &&
+                  ( (['I', 'i', 'u', 'U'].indexOf(tokens[2].texto) >= 0) ||
+                  ((['Y','y'].indexOf(tokens[2].texto) >= 0) && !tokens[3].esVocal()));
+        },
+        function(tokens, tokens_consumidos, transformado) {
+          var cod_tengwarscript;
+          var cod_annatar;
+
+          if (tokens_consumidos[tokens_consumidos.length-1].esConsonante()) {
+
+            if (this.tehtar) {
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtwodotsbelow');
+                  cod_tengwarscript = '\\TTtwodotsbelow';
+              } else { // letra 'u'
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtilde');
+                  cod_tengwarscript = '\\TTtilde';
+              }
+            } else {
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtwodots');
+                  cod_tengwarscript = '\\TTtwodots';
+              } else { // letra 'u'
+                  cod_annatar = acentos_diptongos.get_codigo(
+                                  transformado[transformado.length-1].codigoTengwarscript,
+                                  '\\TTtilde');
+                  cod_tengwarscript = '\\TTtilde';
+              }
+            }
+          } else {
+            if (this.tehtar) {
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = 'h';
+                  cod_tengwarscript = '\\Tanna';
+              } else { // letra 'u'
+                  cod_annatar = 'y';
+                  cod_tengwarscript = '\\Tvala';
+              }
+            } else {
+              if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
+                  cod_annatar = '~';
+                  cod_tengwarscript = '\\Taara';
+              } else { // letra 'u'
+                  cod_annatar = '.';
+                  cod_tengwarscript = '\\Tuure';
+              }
+            }
+          }
+
+          tokens_consumidos.push(tokens[0]);
+          tokens.shift();
+
+          // pasar la regla de diptongo decreciente
+          var segunda_parte = (
+            this.tehtar ?
+            reglas_dipt_decr_tehtar[0].transformar(tokens, tokens_consumidos, transformado)
+            :
+            reglas_dipt_decr_plenas[0].transformar(tokens, tokens_consumidos, transformado)
+          );
+
+          return {
+              codigoAnnatar: cod_annatar + segunda_parte.codigoAnnatar,
+              codigoTengwarscript: cod_tengwarscript + segunda_parte.codigoTengwarscript,
+              tokensRestantes: segunda_parte.tokensRestantes,
+              tokensConsumidos: segunda_parte.tokensConsumidos
+          }
+        }
+  );
+}
+
+ReglaTriptongo.prototype = Object.create(Regla.prototype);
+
+
 
 // validador-transformador de vocales tehtar
 
@@ -1026,6 +1117,13 @@ var reglas_dipt_decr_plenas = [
     new ReglaDiptDecreciente("plenas"),
   ];
 
+var reglas_triptongo_tehtar = [
+    new ReglaTriptongo("tehtar"),
+  ];
+
+var reglas_triptongo_plenas = [
+    new ReglaTriptongo("plenas"),
+  ];
 
 var reglas;
 
@@ -1041,6 +1139,9 @@ function AnalizadorSintactico(texto, opciones){
     if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === "Si") {
       reglas = reglas.concat(reglas_dipt_decr_tehtar);
     }
+    if (opciones && opciones.abreviar_triptongo && opciones.abreviar_triptongo === 'Si') {
+      reglas = reglas.concat(reglas_triptongo_tehtar);
+    }
   } else {
     reglas = reglas_plenas;
     if (opciones.abreviar_dipt_crec && opciones.abreviar_dipt_crec === "Si") {
@@ -1049,7 +1150,12 @@ function AnalizadorSintactico(texto, opciones){
     if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === "Si") {
       reglas = reglas.concat(reglas_dipt_decr_plenas);
     }
+    if (opciones && opciones.abreviar_triptongo && opciones.abreviar_triptongo === 'Si') {
+      reglas = reglas.concat(reglas_triptongo_plenas);
+    }
   }
+
+
 
   if (opciones && opciones.abreviar_nasal_oclusiva &&
       opciones.abreviar_nasal_oclusiva === "Si") {
