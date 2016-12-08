@@ -44,9 +44,9 @@ Características generales de la aplicación que quiero hacer:
 	[*] Revisar que todas las indentaciones sean con espacios y no con tabuladores
 	[x] Mirar si definir las clases como en ECMAScript 6 (por ahora el código es compatible ECMAScript 5).
 	[*] Incluir directamente las librerías de bootstrap y jquery
-[ ] publicar el traductor en mi blog (como proyecto)
-[ ] poner referencia del proyecto en la parte de proyectos de mi blog.
-[ ] poner una entrada en el propio blog sobre el proyecto.
+[*] publicar el traductor en mi blog (como proyecto)
+[*] poner referencia del proyecto en la parte de proyectos de mi blog.
+[*] poner una entrada en el propio blog sobre el proyecto.
 [ ] modificar el artículo de wikipedia para que referencia a mi traductor
 [ ] comentar el traductor en el grupo de lambenor
 [ ] comentar esto la lista de correo de latex en español (tengo dudas de si esto merece la pena o no hacerlo)
