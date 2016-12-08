@@ -22,28 +22,28 @@ Características generales de la aplicación que quiero hacer:
 	[ ] Crear unos test de javascript de prueba completa de la gramática. (en curso)
 	[*] Ampliarlo para que convierta en pantalla.
 	[*] Ampliarlo para incorporar varios tipos de letra.
-	[ ] Ampliarlo para las diferentes alternativas: letras plenas o diacríticas, reglas opcionales del español.
+	[*] Ampliarlo para las diferentes alternativas: letras plenas o diacríticas, reglas opcionales del español.
 		[*] grupos nasal+oclusivo
 		[*] letra S al final de palabra
 		[*] diptongos crecientes
 		[*] diptongos decrecientes
-		[ ] triptongos
-		[ ] abreviatura de acento gráfico (duplicación)
-		[ ] abreviatura de acento gráfico (barra vertical debajo)
+		[*] triptongos
+		[x] abreviatura de acento gráfico (duplicación)
+		[x] abreviatura de acento gráfico (barra vertical debajo)
 	[ ] Poner enlaces a:
 		[ ] Página de prueba de la librería javascript
-		[ ] Página de tengwar castellano 2006
-		[ ] Página de tengwarscript - latex
-		[ ] Mi blog
-		[ ] Mi artículo sobre tengwar del blog
-		[ ] Mi contacto
+		[*] Página de tengwar castellano 2006
+		[*] Página de tengwarscript - latex
+		[*] Mi blog
+		[*] Mi artículo sobre tengwar del blog
+		[*] Mi contacto
 [ ] Revisar estilo
-	[ ] Evitar las comillas dobles en javascript
-	[ ] Evitar las comillas simples en html
-	[ ] Revisar las variables privadas para ponerles _ delante
-	[ ] Revisar que todas las indentaciones sean con espacios y no con tabuladores
-	[ ] Mirar si definir las clases como en ECMAScript 6 (por ahora el código es compatible ECMAScript 5).
-	[ ] Incluir directamente las librerías de bootstrap y jquery
+	[*] Evitar las comillas dobles en javascript
+	[*] Evitar las comillas simples en html
+	[x] Revisar las variables privadas para ponerles _ delante
+	[*] Revisar que todas las indentaciones sean con espacios y no con tabuladores
+	[x] Mirar si definir las clases como en ECMAScript 6 (por ahora el código es compatible ECMAScript 5).
+	[*] Incluir directamente las librerías de bootstrap y jquery
 [ ] publicar el traductor en mi blog (como proyecto)
 [ ] poner referencia del proyecto en la parte de proyectos de mi blog.
 [ ] poner una entrada en el propio blog sobre el proyecto.

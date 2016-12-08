@@ -19,7 +19,7 @@ var TipoToken = [
   'EOF',        // FIN DE FICHERO
   'IOF'         // INICIO DE FICHERO
 
-]
+];
 
 var puntos = ['.', ';', ':', ','];
 var espacios = [' ', '\t', '\r', '\n'];
@@ -31,31 +31,31 @@ function Token(tipo, texto) {
 }
 
 Token.prototype.toString = function() {
-  return '<'+this.texto+', ' + this.tipo + '>'
-}
+  return '<'+this.texto+', ' + this.tipo + '>';
+};
 
 
 Token.prototype.esVocal = function() {
-  return this.tipo === "VOCAL_SIN_ACENTO" ||
-         this.tipo === "VOCAL_CON_ACENTO" ||
-         this.tipo === "VOCAL_CON_DIERESIS" ;
-}
+  return this.tipo === 'VOCAL_SIN_ACENTO' ||
+         this.tipo === 'VOCAL_CON_ACENTO' ||
+         this.tipo === 'VOCAL_CON_DIERESIS' ;
+};
 
 Token.prototype.esApertura = function() {
-  return this.tipo === "APERTURA_EXCL"     ||
-         this.tipo === "APERTURA_INTERROG" ||
-         this.tipo === "APERTURA_COMILLAS" ;
-}
+  return this.tipo === 'APERTURA_EXCL'     ||
+         this.tipo === 'APERTURA_INTERROG' ||
+         this.tipo === 'APERTURA_COMILLAS' ;
+};
 
 Token.prototype.esConsonante = function() {
   return this.tipo === 'CONSONANTE' ||
          this.tipo === 'Y_GRIEGA' ;
-}
+};
 
 Token.prototype.esConsonanteNoMuda = function() {
   return (this.tipo === 'CONSONANTE' ||
          this.tipo === 'Y_GRIEGA') && ['H', 'h'].indexOf(this.texto) < 0 ;
-}
+};
 
 
 
@@ -81,7 +81,7 @@ AnalizadorLex.prototype.analizar = function() {
 
   return tokens;
 
-}
+};
 
 AnalizadorLex.prototype.nextToken = function() {
   var token;
@@ -93,15 +93,15 @@ AnalizadorLex.prototype.nextToken = function() {
     token = new Token('EOF', 'EOF');
 
     if (this.en_interrog) {
-      throw new Error("Se ha alcanzado el final de la entrada con una interrogación abierta");
+      throw new Error('Se ha alcanzado el final de la entrada con una interrogación abierta');
     }
 
     if (this.en_excl) {
-      throw new Error("Se ha alcanzado el final de la entrada con una exclamación abierta");
+      throw new Error('Se ha alcanzado el final de la entrada con una exclamación abierta');
     }
 
     if (this.en_comillas) {
-      throw new Error("Se ha alcanzado el final de la entrada con una comilla abierta");
+      throw new Error('Se ha alcanzado el final de la entrada con una comilla abierta');
     }
 
 
@@ -110,7 +110,7 @@ AnalizadorLex.prototype.nextToken = function() {
     token = this.obtenerToken(c);
   }
   return token;
-}
+};
 
 AnalizadorLex.prototype.obtenerToken = function(c) {
   var token;
@@ -159,7 +159,7 @@ AnalizadorLex.prototype.obtenerToken = function(c) {
   } else if (c === '!') {
 
     if (!this.en_excl) {
-      throw new Error("Cierre de exclamación sin apertura. Posición:"+this.posicion);
+      throw new Error('Cierre de exclamación sin apertura. Posición:'+this.posicion);
     }
 
     token = new Token('CIERRE_EXCL', c);
@@ -169,7 +169,7 @@ AnalizadorLex.prototype.obtenerToken = function(c) {
   } else if (c === '?') {
 
     if (!this.en_interrog) {
-      throw new Error("Cierre de interrogación sin apertura. Posición:"+this.posicion);
+      throw new Error('Cierre de interrogación sin apertura. Posición:'+this.posicion);
     }
 
     token = new Token('CIERRE_INTERROG', c);
@@ -210,7 +210,7 @@ AnalizadorLex.prototype.obtenerToken = function(c) {
 
   }
   return token;
-}
+};
 
 
 
@@ -240,7 +240,7 @@ vocal_a_tengwar_tehtar.get_codigo = function(cod_tengwar, vocal) {
     return vocal_a_tengwar_tehtar[vocal][0];
 
   } else if (['\\Ttinco', '\\Tparma','\\Tcalma','\\Tquesse',
-              '\\Thwesta', , '\\Troomen', '\\Tsilmenuquerna',
+              '\\Thwesta', '\\Troomen', '\\Tsilmenuquerna',
               '\\Tquesse\\Tlefthook', '\\Ttinco\\TTnasalizer',
               '\\Tparma\\TTnasalizer', '\\Tcalma\\TTnasalizer',
               '\\Tquesse\\TTnasalizer', '\\Tyanta', '\\Tvilya',  ' \\Tanna', '\\Tvala'
@@ -257,7 +257,7 @@ vocal_a_tengwar_tehtar.get_codigo = function(cod_tengwar, vocal) {
 
     return vocal_a_tengwar_tehtar[vocal][3];
 
-  };
+  }
 };
 
 
@@ -297,7 +297,7 @@ acentos_diptongos.get_codigo = function(cod_tengwar, acento) {
 
     return acentos_diptongos[acento][3];
 
-  };
+  }
 };
 
 
@@ -311,11 +311,11 @@ function Regla(validador, transformador) {
 
 Regla.prototype.esValida = function(tokens, tokens_consumidos) {
   return this.validador(tokens, tokens_consumidos);
-}
+};
 
 Regla.prototype.transformar = function(tokens, tokens_consumidos, transformado, tipo_letra) {
   return this.transformador(tokens, tokens_consumidos, transformado, tipo_letra); // devuelve un objeto de tres elementos: el código en tengwar annatar, el código en tengwarscript para LaTeX, la lista de tokens restante.
-}
+};
 
 
 // validador-transformador simple (mira solamente en el caracter que está en la posición actual).
@@ -339,7 +339,7 @@ function ReglaSimple(caracteres, resultado, tengwarscript, numConsume) {
               codigoTengwarscript: tengwarscript,
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -370,7 +370,7 @@ function ReglaDoble(caracteres1, caracteres2, resultado, tengwarscript, numConsu
               codigoTengwarscript: tengwarscript,
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -402,7 +402,7 @@ function ReglaTriple(caracteres1, caracteres2, caracteres3, resultado, tengwarsc
               codigoTengwarscript: tengwarscript,
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -426,7 +426,7 @@ function ReglaYConsonante() {
               codigoTengwarscript: '\\Tanca',
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -445,20 +445,20 @@ function ReglaYVocal(param) {
         function(tokens, tokens_consumidos, transformado, tipo_letra) {
           tokens_consumidos.push(tokens[0]);
           tokens.shift();
-          if (param === "tehtar") {
+          if (param === 'tehtar') {
             return {
                 codigoAnnatar: '`<span class="'+tipo_letra+'">Û</span>',
                 codigoTengwarscript: '\\Ttelco\\TTbreve',
                 tokensRestantes: tokens,
                 tokensConsumidos: tokens_consumidos
-            }
+            };
           } else {
             return {
                 codigoAnnatar: '~',
                 codigoTengwarscript: '\\Taara',
                 tokensRestantes: tokens,
                 tokensConsumidos: tokens_consumidos
-            }
+            };
           }
         }
   );
@@ -485,7 +485,7 @@ function ReglaRInicio() {
               codigoTengwarscript: '\\Troomen',
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -523,7 +523,7 @@ function ReglaDiptCreciente(vocales) {
                   cod_annatar = acentos_diptongos.get_codigo(
                                   transformado[transformado.length-1].codigoTengwarscript,
                                   '\\TTtilde')+cod_annatar;
-                  cod_tengwarscript = '\\TTtilde'+vocal_a_tengwar_tehtar[tokens[1].texto][4];;
+                  cod_tengwarscript = '\\TTtilde'+vocal_a_tengwar_tehtar[tokens[1].texto][4];
               }
             } else {
                 consumir_dos = false;
@@ -542,11 +542,11 @@ function ReglaDiptCreciente(vocales) {
           } else {
             if (this.tehtar) {
               if (['I', 'i'].indexOf(tokens[0].texto) >= 0) {
-                  cod_annatar = 'h'+vocal_a_tengwar_tehtar[tokens[1].texto][1];;
-                  cod_tengwarscript = '\\Tanna'+vocal_a_tengwar_tehtar[tokens[1].texto][4];;
+                  cod_annatar = 'h'+vocal_a_tengwar_tehtar[tokens[1].texto][1];
+                  cod_tengwarscript = '\\Tanna'+vocal_a_tengwar_tehtar[tokens[1].texto][4];
               } else { // letra 'u'
-                  cod_annatar = 'y'+vocal_a_tengwar_tehtar[tokens[1].texto][1];;
-                  cod_tengwarscript = '\\Tvala'+vocal_a_tengwar_tehtar[tokens[1].texto][4];;
+                  cod_annatar = 'y'+vocal_a_tengwar_tehtar[tokens[1].texto][1];
+                  cod_tengwarscript = '\\Tvala'+vocal_a_tengwar_tehtar[tokens[1].texto][4];
               }
             } else {
               consumir_dos = false;
@@ -571,7 +571,7 @@ function ReglaDiptCreciente(vocales) {
               codigoTengwarscript: cod_tengwarscript,
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -642,7 +642,7 @@ function ReglaDiptDecreciente(vocales) {
               codigoTengwarscript: cod_tengwarscript,
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -730,7 +730,7 @@ function ReglaTriptongo(vocales) {
               codigoTengwarscript: cod_tengwarscript + segunda_parte.codigoTengwarscript,
               tokensRestantes: segunda_parte.tokensRestantes,
               tokensConsumidos: segunda_parte.tokensConsumidos
-          }
+          };
         }
   );
 }
@@ -760,7 +760,7 @@ function ReglaVocal() {
                 tokens_consumidos[tokens_consumidos.length-1].esConsonante())) {
             retorno.codigoTengwarscript += '\\Telco';
             retorno.codigoAnnatar += '`';
-          };
+          }
 
           retorno.codigoTengwarscript += vocal_a_tengwar_tehtar[tokens[0].texto][4];
 
@@ -802,7 +802,7 @@ function ReglaComillaApertura() {
               codigoTengwarscript: (comilla==="'" ? '\\Tromanquoteleft' : '\\Tromandblquoteleft'),
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -826,7 +826,7 @@ function ReglaComillaCierre() {
               codigoTengwarscript: (comilla==="'" ? '\\Tromanquoteright' : '\\Tromandblquoteright'),
               tokensRestantes: tokens,
               tokensConsumidos: tokens_consumidos
-          }
+          };
         }
   );
 }
@@ -1070,7 +1070,7 @@ var reglas_tehtar = [
   new ReglaSimple(['.', ';', ':'],'-','\\Tcolon', 1),
   new ReglaSimple([','],'=','\\Tcentereddot', 1),
 
-  new ReglaSimple( ["¿", "¡"], '', '', 1),
+  new ReglaSimple( ['¿', '¡'], '', '', 1),
   new ReglaSimple( ['?'], 'À', '\\Tquestion', 1),
   new ReglaSimple( ['!'], 'Á', '\\Texclamation', 1),
 
@@ -1102,27 +1102,27 @@ var reglas_s = [
 
 
 var reglas_dipt_crec_tehtar = [
-    new ReglaDiptCreciente("tehtar"),
+    new ReglaDiptCreciente('tehtar'),
   ];
 
 var reglas_dipt_crec_plenas = [
-    new ReglaDiptCreciente("plenas"),
+    new ReglaDiptCreciente('plenas'),
   ];
 
 var reglas_dipt_decr_tehtar = [
-    new ReglaDiptDecreciente("tehtar"),
+    new ReglaDiptDecreciente('tehtar'),
   ];
 
 var reglas_dipt_decr_plenas = [
-    new ReglaDiptDecreciente("plenas"),
+    new ReglaDiptDecreciente('plenas'),
   ];
 
 var reglas_triptongo_tehtar = [
-    new ReglaTriptongo("tehtar"),
+    new ReglaTriptongo('tehtar'),
   ];
 
 var reglas_triptongo_plenas = [
-    new ReglaTriptongo("plenas"),
+    new ReglaTriptongo('plenas'),
   ];
 
 var reglas;
@@ -1131,12 +1131,12 @@ function AnalizadorSintactico(texto, opciones){
   this.texto = texto;
   this.opciones = opciones;
 
-  if (opciones && opciones.vocales && opciones.vocales === "tehtar") {
+  if (opciones && opciones.vocales && opciones.vocales === 'tehtar') {
     reglas = reglas_tehtar;
-    if (opciones.abreviar_dipt_crec && opciones.abreviar_dipt_crec === "Si") {
+    if (opciones.abreviar_dipt_crec && opciones.abreviar_dipt_crec === 'Si') {
       reglas = reglas.concat(reglas_dipt_crec_tehtar);
     }
-    if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === "Si") {
+    if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === 'Si') {
       reglas = reglas.concat(reglas_dipt_decr_tehtar);
     }
     if (opciones && opciones.abreviar_triptongo && opciones.abreviar_triptongo === 'Si') {
@@ -1144,10 +1144,10 @@ function AnalizadorSintactico(texto, opciones){
     }
   } else {
     reglas = reglas_plenas;
-    if (opciones.abreviar_dipt_crec && opciones.abreviar_dipt_crec === "Si") {
+    if (opciones.abreviar_dipt_crec && opciones.abreviar_dipt_crec === 'Si') {
       reglas = reglas.concat(reglas_dipt_crec_plenas);
     }
-    if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === "Si") {
+    if (opciones.abreviar_dipt_decr && opciones.abreviar_dipt_decr === 'Si') {
       reglas = reglas.concat(reglas_dipt_decr_plenas);
     }
     if (opciones && opciones.abreviar_triptongo && opciones.abreviar_triptongo === 'Si') {
@@ -1158,13 +1158,13 @@ function AnalizadorSintactico(texto, opciones){
 
 
   if (opciones && opciones.abreviar_nasal_oclusiva &&
-      opciones.abreviar_nasal_oclusiva === "Si") {
+      opciones.abreviar_nasal_oclusiva === 'Si') {
     reglas = reglas.concat(reglas_grupo);
   }
 
 
   if (opciones && opciones.abreviar_s_final &&
-      opciones.abreviar_s_final === "Si") {
+      opciones.abreviar_s_final === 'Si') {
     reglas = reglas.concat(reglas_s);
   }
 
@@ -1182,7 +1182,7 @@ AnalizadorSintactico.prototype.analizar = function(tipo_letra) {
   } while (this.tokens[0].tipo !== 'EOF');
 
   return this.transformado;
-}
+};
 
 AnalizadorSintactico.prototype.analizarSiguiente = function(tipo_letra) {
   var t_c = this.tokens_consumidos;
@@ -1209,61 +1209,36 @@ AnalizadorSintactico.prototype.analizarSiguiente = function(tipo_letra) {
       }
     }
     if (num_regla > 1) {
-      throw new Error("La entrada es ambigua (varias reglas posibles). Tokens restantes: " + t.toString());
+      throw new Error('La entrada es ambigua (varias reglas posibles). Tokens restantes: ' + t.toString());
     } else {
       return reglas_validas[ind_regla].transformar(t, t_c, this.transformado, tipo_letra);
     }
   } else {
-    throw new Error("No se puede reconocer esta sentencia. Tokens restantes: " + t.toString());
+    throw new Error('No se puede reconocer esta sentencia. Tokens restantes: ' + t.toString());
   }
-}
+};
 
 AnalizadorSintactico.prototype.getAnnatar = function() {
  var texto = this.transformado.map(
     function(t) {return t.codigoAnnatar;}
   ).join('');
 
-  if (this.opciones.abreviar_nasal_oclusiva === "Si") {
-    texto = texto.replace('5x','x{')
+  if (this.opciones.abreviar_nasal_oclusiva === 'Si') {
+    texto = texto.replace('5x','x{');
   }
 
   return texto;
-}
+};
 
 AnalizadorSintactico.prototype.getTengwarscript = function() {
   var texto = this.transformado.map(
     function(t) {return t.codigoTengwarscript;}
   ).join('');
 
-  if (this.opciones.abreviar_nasal_oclusiva === "Si") {
-    texto = texto.replace('\\Tnuumen\\Tungwe','\\Tungwe\\TTnasalizer')
+  if (this.opciones.abreviar_nasal_oclusiva === 'Si') {
+    texto = texto.replace('\\Tnuumen\\Tungwe','\\Tungwe\\TTnasalizer');
   }
   return texto;
 
-}
-
-//TODO: Prueba interna de las reglas
-/*
-var prueba = new AnalizadorLex('Qui');
-
-prueba.nextToken();
-
-var tokens = [prueba.nextToken(), prueba.nextToken(), prueba.nextToken()];
-
-tokens
-
-var regla = reglas[18];
-
-regla
-
-console.log(regla.esValida(tokens));
-
-var resultado = regla.transformar(tokens);
-resultado
-
-var prueba = new AnalizadorSintactico('acné');
-prueba.analizar('t');
-console.log(prueba.getAnnatar());
-console.log(prueba.getTengwarscript());
-*/
+};
 
