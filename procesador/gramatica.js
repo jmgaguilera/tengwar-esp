@@ -1064,7 +1064,7 @@ var reglas_tehtar = [
   new ReglaSimple(['Á','á'],'~C','\\Taara\\TTthreedots', 1),
   new ReglaSimple(['É','é'],'~V','\\Taara\\TTacute', 1),
   new ReglaSimple(['Í','í'],'~B','\\Taara\\TTdot', 1),
-  new ReglaSimple(['Ó','ó'],'~N','\\Taara\TTrightcurl', 1),
+  new ReglaSimple(['Ó','ó'],'~N','\\Taara\\TTrightcurl', 1),
   new ReglaSimple(['Ú','ú'],'~M','\\Taara\\TTleftcurl', 1),
 
   new ReglaSimple(['.', ';', ':'],'-','\\Tcolon', 1),
