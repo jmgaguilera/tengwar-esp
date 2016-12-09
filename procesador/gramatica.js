@@ -226,7 +226,19 @@ var vocal_a_tengwar_tehtar = {
   'O' : ['^','Y','H','N','\\TTrightcurl'],
   'o' : ['^','Y','H','N','\\TTrightcurl'],
   'U' : ['&','U','J','M','\\TTleftcurl'],
-  'u' : ['&','U','J','M','\\TTleftcurl']
+  'u' : ['&','U','J','M','\\TTleftcurl'],
+  'Ü' : ['&','U','J','M','\\TTleftcurl'],
+  'ü' : ['&','U','J','M','\\TTleftcurl'],
+  'Á' : ['~C','~C','~C','~C','\\Taara\\TTthreedots'],
+  'á' : ['~C','~C','~C','~C','\\Taara\\TTthreedots'],
+  'É' : ['~V','~V','~V','~V','\\Taara\\TTacute'],
+  'é' : ['~V','~V','~V','~V','\\Taara\\TTacute'],
+  'Í' : ['~B','~B','~B','~B','\\Taara\\TTdot'],
+  'í' : ['~B','~B','~B','~B','\\Taara\\TTdot'],
+  'Ó' : ['~N','~N','~N','~N','\\Taara\\TTrightcurl'],
+  'ó' : ['~N','~N','~N','~N','\\Taara\\TTrightcurl'],
+  'Ú' : ['~M','~M','~M','~M','\\Taara\\TTleftcurl'],
+  'ú' : ['~M','~M','~M','~M','\\Taara\\TTleftcurl'],
 };
 
 vocal_a_tengwar_tehtar.get_codigo = function(cod_tengwar, vocal) {
@@ -379,8 +391,9 @@ ReglaDoble.prototype = Object.create(Regla.prototype);
 
 
 // validador-transformador triple (mira en el caracter que está en la posición actual y en las dos siguientes).
-function ReglaTriple(caracteres1, caracteres2, caracteres3, resultado, tengwarscript, numConsume) {
-  this.peso = numConsume;
+function ReglaTriple(caracteres1, caracteres2, caracteres3, resultado, tengwarscript, numConsume, peso) {
+  this.peso = peso || numConsume; // el peso lo hemos llamado consume
+
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 3 &&
@@ -499,7 +512,7 @@ function ReglaDiptCreciente(vocales) {
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 2 &&
-                 (['I', 'i', 'u', 'U'].indexOf(tokens[0].texto) >= 0) &&
+                 (['I', 'i', 'u', 'U', 'ü', 'Ü'].indexOf(tokens[0].texto) >= 0) &&
                   tokens[1].esVocal();
         },
         function(tokens, tokens_consumidos, transformado) {
@@ -597,39 +610,52 @@ function ReglaDiptDecreciente(vocales) {
           var cod_annatar;
 
           if (this.tehtar) {
-            if (['I','i','Y','y'].indexOf(tokens[1].texto) >= 1) {
-              cod_annatar = 'l'+vocal_a_tengwar_tehtar.get_codigo('\\Tyanta', tokens[0].texto);
-              cod_tengwarscript = '\\Tyanta'+vocal_a_tengwar_tehtar[tokens[0].texto][4];
+            if (['I','i','Y','y'].indexOf(tokens[1].texto) >= 0) {
+              if (['A','a','E','e','I','o','O','u','U','ü','Ü'].indexOf(tokens[0].texto) >= 0) {
+                cod_annatar = 'l'+vocal_a_tengwar_tehtar.get_codigo('\\Tyanta', tokens[0].texto);
+                cod_tengwarscript = '\\Tyanta'+vocal_a_tengwar_tehtar[tokens[0].texto][4];
+              } else { // vocal con acento, uso acento gráfico sin abreviar, pero va por delante
+                cod_annatar = vocal_a_tengwar_tehtar.get_codigo('\\Tyanta', tokens[0].texto)+'l';
+                cod_tengwarscript = vocal_a_tengwar_tehtar[tokens[0].texto][4] + '\\Tyanta';
+              }
             } else {  // letra U
-              cod_annatar = '.'+vocal_a_tengwar_tehtar.get_codigo('\\Toore', tokens[0].texto);
-              cod_tengwarscript = '\\Toore'+vocal_a_tengwar_tehtar[tokens[0].texto][4];
+              if (['A','a','E','e','I','o','O','u','U','ü','Ü'].indexOf(tokens[0].texto) >= 0) {
+                cod_annatar = '.'+vocal_a_tengwar_tehtar.get_codigo('\\Toore', tokens[0].texto);
+                cod_tengwarscript = '\\Toore'+vocal_a_tengwar_tehtar[tokens[0].texto][4];
+              } else { // vocal con acento, uso acento gráfico sin abreviar, pero va por delante
+                cod_annatar = vocal_a_tengwar_tehtar.get_codigo('\\Toore', tokens[0].texto)+'.';
+                cod_tengwarscript = vocal_a_tengwar_tehtar[tokens[0].texto][4]+'\\Toore';
+              }
             }
 
           } else {
 
-             if (['A','a'].indexOf(tokens[0].texto) >= 0) {
+             var acentuada = (tokens[0].tipo === 'VOCAL_CON_ACENTO' ? '\\TTdoubler' : '');
+             var n_acentuada = (tokens[0].tipo === 'VOCAL_CON_ACENTO' ? ';' : '');
+
+             if (['A','a', 'Á','á'].indexOf(tokens[0].texto) >= 0) {
                  cod_annatar = 'n';
                  cod_tengwarscript = '\\Tvilya';
-             } else if (['E','e'].indexOf(tokens[0].texto) >= 0) {
+             } else if (['E','e', 'É', 'é'].indexOf(tokens[0].texto) >= 0) {
                  cod_annatar = 'l';
                  cod_tengwarscript = '\\Tyanta';
-             } else if (['i','I'].indexOf(tokens[0].texto) >= 0) {
+             } else if (['i','I','Í','í'].indexOf(tokens[0].texto) >= 0) {
                  cod_annatar = '`';
                  cod_tengwarscript = '\\Ttelco';
-             } else if (['O','o'].indexOf(tokens[0].texto) >= 0) {
+             } else if (['O','o','Ó','ó'].indexOf(tokens[0].texto) >= 0) {
                  cod_annatar = 'h';
                  cod_tengwarscript = '\\Tanna';
-             } else if (['U','u'].indexOf(tokens[0].texto) >= 0) {
+             } else if (['U', 'u', 'ú', 'Ú'].indexOf(tokens[0].texto) >= 0) {
                  cod_annatar = 'y';
                  cod_tengwarscript = '\\Tvala';
              }
 
              if (['i','I','y','Y'].indexOf(tokens[1].texto) >= 0) {
-               cod_annatar += acentos_diptongos.get_codigo(cod_tengwarscript,'\\TTtwodots');
-               cod_tengwarscript += '\\TTtwodots';
+               cod_annatar += n_acentuada + acentos_diptongos.get_codigo(cod_tengwarscript,'\\TTtwodots');
+               cod_tengwarscript += acentuada + '\\TTtwodots';
              } else { // termina en U
-               cod_annatar += acentos_diptongos.get_codigo(cod_tengwarscript,'\\TTtilde');
-               cod_tengwarscript += '\\TTtilde';
+               cod_annatar += n_acentuada + acentos_diptongos.get_codigo(cod_tengwarscript,'\\TTtilde');
+               cod_tengwarscript += acentuada + '\\TTtilde';
              }
           }
 
@@ -658,7 +684,7 @@ function ReglaTriptongo(vocales) {
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 4 &&
-                 (['I', 'i', 'u', 'U'].indexOf(tokens[0].texto) >= 0) &&
+                 (['I', 'i', 'u', 'U', 'ü', 'Ü'].indexOf(tokens[0].texto) >= 0) &&
                   tokens[1].esVocal() &&
                   ( (['I', 'i', 'u', 'U'].indexOf(tokens[2].texto) >= 0) ||
                   ((['Y','y'].indexOf(tokens[2].texto) >= 0) && !tokens[3].esVocal()));
@@ -747,7 +773,7 @@ function ReglaVocal() {
   Regla.call(this,
         function(tokens, tokens_consumidos) {
           return tokens.length >= 1 &&
-                 (['A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u'].indexOf(tokens[0].texto) >= 0);
+                 (['A', 'a', 'E', 'e', 'I', 'i', 'O', 'o', 'U', 'u', 'ü', 'Ü'].indexOf(tokens[0].texto) >= 0);
         },
         function(tokens, tokens_consumidos, transformado) {
           var retorno = {
@@ -844,15 +870,15 @@ var reglas_plenas = [
   new ReglaDoble(['k', 'K'], ['A', 'a'], 'zn', '\\Tquesse\\Tvilya', 2),
   new ReglaDoble(['c', 'C'], ['O', 'o'], 'zh', '\\Tquesse\\Tanna', 2),
   new ReglaDoble(['k', 'K'], ['O', 'o'], 'zh', '\\Tquesse\\Tanna', 2),
-  new ReglaDoble(['c', 'C'], ['U', 'u'], 'zy', '\\Tquesse\\Tvala', 2),
-  new ReglaDoble(['k', 'K'], ['U', 'u'], 'zy', '\\Tquesse\\Tvala', 2),
+  new ReglaDoble(['c', 'C'], ['U', 'u'], 'z', '\\Tquesse', 1, 2),
+  new ReglaDoble(['k', 'K'], ['U', 'u'], 'z', '\\Tquesse', 1, 2),
 
   new ReglaDoble(['c', 'C'], ['Á', 'á'], 'zn;', '\\Tquesse\\Tvilya\\TTdoubler', 2),
   new ReglaDoble(['k', 'K'], ['Á', 'á'], 'zn;', '\\Tquesse\\Tvilya\\TTdoubler', 2),
   new ReglaDoble(['c', 'C'], ['Ó', 'ó'], 'zh;', '\\Tquesse\\Tanna\\TTdoubler', 2),
   new ReglaDoble(['k', 'K'], ['Ó', 'ó'], 'zh;', '\\Tquesse\\Tanna\\TTdoubler', 2),
-  new ReglaDoble(['c', 'C'], ['Ú', 'ú'], 'zy;', '\\Tquesse\\Tvala\\TTdoubler', 2),
-  new ReglaDoble(['k', 'K'], ['Ú', 'ú'], 'zy;', '\\Tquesse\\Tvala\\TTdoubler', 2),
+  new ReglaDoble(['c', 'C'], ['Ú', 'ú'], 'z', '\\Tquesse', 1, 2),
+  new ReglaDoble(['k', 'K'], ['Ú', 'ú'], 'z', '\\Tquesse', 1, 2),
 
   new ReglaSimple(['c', 'C'], 'z', '\\Tquesse', 1),
 
@@ -884,28 +910,28 @@ var reglas_plenas = [
   new ReglaDoble(['g', 'G'], ['ó', 'Ó'], 'xh;', '\\Tungwe\\Tanna\\TTdoubler', 2),
   new ReglaDoble(['g', 'G'], ['ú', 'Ú'], 'xy;', '\\Tungwe\\Tvala\\TTdoubler', 2),
 
-  new ReglaTriple(['g', 'G'], ['ü','ü'], ['é', 'É'], 'xyl;', '\\Tungwe\\Tvala\\Tyanta\\TTdoubler', 3),
-  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['í', 'Í'], 'xy`;', '\\Tungwe\\Tvala\\Ttelco\\TTdoubler', 3),
-  new ReglaTriple(['g', 'G'], ['ü','ü'], ['e', 'E'], 'xyl', '\\Tungwe\\Tvala\\Tyanta', 3),
-  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['i', 'I'], 'xy`', '\\Tungwe\\Tvala\\Ttelco', 3),
+  new ReglaTriple(['g', 'G'], ['ü','ü'], ['é', 'É'], 'x', '\\Tungwe', 1, 3),
+  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['í', 'Í'], 'x', '\\Tungwe', 1, 3),
+  new ReglaTriple(['g', 'G'], ['ü','ü'], ['e', 'E'], 'x', '\\Tungwe', 1, 3),
+  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['i', 'I'], 'x', '\\Tungwe', 1, 3),
   new ReglaSimple(['g', 'G'], 'x', '\\Tungwe', 1),
 
 
   new ReglaSimple(['z', 'Z'], '3', '\\Tthuule', 1),
 
   new ReglaDoble(['c', 'C'], ['E', 'e'], '3l', '\\Tthuule\\Tyanta', 2),
-  new ReglaDoble(['c', 'C'], ['I', 'i'], '3`', '\\Tthuule\\Ttelco', 2),
+  new ReglaDoble(['c', 'C'], ['I', 'i'], '3', '\\Tthuule', 1, 2),
 
   new ReglaDoble(['c', 'C'], ['É', 'é'], '3l;', '\\Tthuule\\Tyanta\\TTdoubler', 2),
-  new ReglaDoble(['c', 'C'], ['Í', 'í'], '3`;', '\\Tthuule\\Ttelco\\TTdoubler', 2),
+  new ReglaDoble(['c', 'C'], ['Í', 'í'], '3', '\\Tthuule', 1, 2),
 
   new ReglaSimple(['f', 'F'], 'e', '\\Tformen', 1),
   new ReglaSimple(['j', 'J'], 'c', '\\Thwesta', 1),
 
   new ReglaDoble(['G', 'g'], ['E', 'e'], 'cl', '\\Thwesta\\Tyanta', 2),
-  new ReglaDoble(['G', 'g'], ['I', 'i'], 'c`', '\\Thwesta\\Ttelco', 2),
+  new ReglaDoble(['G', 'g'], ['I', 'i'], 'c', '\\Thwesta', 1, 2),
   new ReglaDoble(['G', 'g'], ['É', 'é'], 'cl;', '\\Thwesta\\Tyanta\\TTdoubler', 2),
-  new ReglaDoble(['G', 'g'], ['Í', 'í'], 'c`;', '\\Thwesta\\Ttelco\\TTdoubler', 2),
+  new ReglaDoble(['G', 'g'], ['Í', 'í'], 'c', '\\Thwesta', 1, 2),
 
   new ReglaDoble(['L', 'l'], ['L', 'l'], 'f', '\\Tanca', 2),
 
@@ -934,7 +960,7 @@ var reglas_plenas = [
   new ReglaSimple(['E','e'],'l','\\Tyanta', 1),
   new ReglaSimple(['I','i'],'`','\\Ttelco', 1),
   new ReglaSimple(['O','o'],'h','\\Tanna', 1),
-  new ReglaSimple(['U','u'],'y','\\Tvala', 1),
+  new ReglaSimple(['U','u', 'Ü', 'ü'],'y','\\Tvala', 1),
 
   new ReglaSimple(['Á','á'],'n;','\\Tvilya\\TTdoubler', 1),
   new ReglaSimple(['É','é'],'l;','\\Tyanta\\TTdoubler', 1),
@@ -966,8 +992,8 @@ var reglas_tehtar = [
   new ReglaDoble(['k', 'K'], ['A', 'a'], 'zE', '\\Tquesse\\TTthreedots', 2),
   new ReglaDoble(['c', 'C'], ['O', 'o'], 'zY', '\\Tquesse\\TTrightcurl', 2),
   new ReglaDoble(['k', 'K'], ['O', 'o'], 'zY', '\\Tquesse\\TTrightcurl', 2),
-  new ReglaDoble(['c', 'C'], ['U', 'u'], 'zU', '\\Tquesse\\TTleftcurl', 2),
-  new ReglaDoble(['k', 'K'], ['U', 'u'], 'zU', '\\Tquesse\\TTleftcurl', 2),
+  new ReglaDoble(['c', 'C'], ['U', 'u'], 'z', '\\Tquesse', 1, 2),
+  new ReglaDoble(['k', 'K'], ['U', 'u'], 'z', '\\Tquesse', 1, 2),
 
   new ReglaDoble(['c', 'C'], ['Á', 'á'], 'z~C', '\\Tquesse\\Taara\\TTthreedots', 2),
   new ReglaDoble(['k', 'K'], ['Á', 'á'], 'z~C', '\\Tquesse\\Taara\\TTthreedots', 2),
@@ -975,8 +1001,8 @@ var reglas_tehtar = [
 
   new ReglaDoble(['c', 'C'], ['Ó', 'ó'], 'z~N', '\\Tquesse\\Taara\\TTrightcurl', 2),
   new ReglaDoble(['k', 'K'], ['Ó', 'ó'], 'z~N', '\\Tquesse\\Taara\\TTrightcurl', 2),
-  new ReglaDoble(['c', 'C'], ['Ú', 'ú'], 'z~M', '\\Tquesse\\Taara\\TTleftcurl', 2),
-  new ReglaDoble(['k', 'K'], ['Ú', 'ú'], 'z~M', '\\Tquesse\\Taara\\TTleftcurl', 2),
+  new ReglaDoble(['c', 'C'], ['Ú', 'ú'], 'z', '\\Tquesse', 1, 2),
+  new ReglaDoble(['k', 'K'], ['Ú', 'ú'], 'z', '\\Tquesse', 1, 2),
 
   new ReglaSimple(['c', 'C'], 'z', '\\Tquesse', 1),
 
@@ -1009,10 +1035,10 @@ var reglas_tehtar = [
   new ReglaDoble(['g', 'G'], ['ú', 'Ú'], 'x~M', '\\Tungwe\\Taara\\TTleftcurl', 2),
 
 
-  new ReglaTriple(['g', 'G'], ['ü','ü'], ['é', 'É'], 'x&~V', '\\Tungwe\\TTleftcurl\\Taara\\TTacute', 3),
-  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['í', 'Í'], 'x&~B', '\\Tungwe\\TTleftcurl\\Taara\\TTdot', 3),
-  new ReglaTriple(['g', 'G'], ['ü','ü'], ['e', 'E'], 'x&~V', '\\Tungwe\\TTleftcurl\\Taara\\TTacute', 3),
-  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['i', 'I'], 'x&~B', '\\Tungwe\\TTleftcurl\\Taara\\TTdot', 3),
+  new ReglaTriple(['g', 'G'], ['ü','ü'], ['é', 'É'], 'x', '\\Tungwe', 1, 3),
+  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['í', 'Í'], 'x', '\\Tungwe', 1, 3),
+  new ReglaTriple(['g', 'G'], ['ü','ü'], ['e', 'E'], 'x', '\\Tungwe', 1, 3),
+  new ReglaTriple(['g', 'G'], ['ü','Ü'], ['i', 'I'], 'x', '\\Tungwe', 1, 3),
   new ReglaSimple(['g', 'G'], 'x', '\\Tungwe', 1),
 
 
@@ -1020,18 +1046,18 @@ var reglas_tehtar = [
 
 
   new ReglaDoble(['c', 'C'], ['E', 'e'], '3F', '\\Tthuule\\TTacute', 2),
-  new ReglaDoble(['c', 'C'], ['I', 'i'], '3G', '\\Tthuule\\TTdot', 2),
+  new ReglaDoble(['c', 'C'], ['I', 'i'], '3', '\\Tthuule', 1, 2),
 
   new ReglaDoble(['c', 'C'], ['É', 'é'], '3~V;', '\\Tthuule\\Taara\\TTacute', 2),
-  new ReglaDoble(['c', 'C'], ['Í', 'í'], '3~B;', '\\Tthuule\\Taara\\TTdot', 2),
+  new ReglaDoble(['c', 'C'], ['Í', 'í'], '3', '\\Tthuule', 1, 2),
 
   new ReglaSimple(['f', 'F'], 'e', '\\Tformen', 1),
   new ReglaSimple(['j', 'J'], 'c', '\\Thwesta', 1),
 
   new ReglaDoble(['G', 'g'], ['E', 'e'], 'cR', '\\Thwesta\\TTacute', 2),
-  new ReglaDoble(['G', 'g'], ['I', 'i'], 'cT', '\\Thwesta\\TTdot', 2),
+  new ReglaDoble(['G', 'g'], ['I', 'i'], 'c', '\\Thwesta', 1, 2),
   new ReglaDoble(['G', 'g'], ['É', 'é'], 'c~V', '\\Thwesta\\Taara\\TTacute', 2),
-  new ReglaDoble(['G', 'g'], ['Í', 'í'], 'c~B', '\\Thwesta\\Taara\\TTdot', 2),
+  new ReglaDoble(['G', 'g'], ['Í', 'í'], 'c', '\\Thwesta', 1, 2),
 
   new ReglaDoble(['L', 'l'], ['L', 'l'], 'f', '\\Tanca', 2),
 
